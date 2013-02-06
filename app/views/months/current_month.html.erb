@@ -1,0 +1,54 @@
+<% if current_user %>
+
+<h1>Current Month - <%= @max %></h1>
+
+	<div>
+		<table id="currentmonth">
+			<thead>
+			<tr>
+				<th>Fund</th>
+				<th>AUM</th>
+				<th>Gross</th>
+				<th>Net</th>
+				<th>Return</th>
+			</tr>
+			</thead>
+			
+			<tbody>
+			<% @funds.each do |f| %>
+				<% loc = f.months.where( mend: @max ) %>
+				<% if loc.present? %>
+					<tr>
+						<td><%= link_to f.name, f %></td>
+						<td><%= number_with_delimiter(loc.first.aum) %></td>
+						<td><%= number_to_percentage(loc.first.gross, precision: 2) %></td>
+						<td><%= number_to_percentage(loc.first.net, precision: 2) %></td>
+						<td><%= number_to_percentage(loc.first.fund_return, precision: 2) %></td>
+					</tr>
+				<% else %>
+					<tr>
+						<td><%= link_to f.name, f %></td>
+					</tr>
+				<% end %>
+			<% end %>
+			</tbody>
+
+		</table>
+	</div>
+
+<% if current_user.global_admin? %>
+	<h2>Import Data</h2>
+
+	<%= form_tag import_months_path, multipart: true do %>
+		<%= file_field_tag :file %>
+		<%= submit_tag "Import" %>
+	<% end %>
+<% end %>
+<% else %>
+	<h1>Log In</h1>
+	<%= form_tag sessions_path do %>
+		<%= render 'shared/session_form' %>
+	<% end %>
+<% end %>
+
+

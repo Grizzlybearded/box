@@ -1,0 +1,19 @@
+<fieldset>
+<%= f.label :mend %>
+<%= f.date_select :mend , discard_day: true %>
+
+<%= f.label :aum %>
+<%= f.number_field :aum %>
+
+<%= f.label :gross %>
+<%= f.number_field :gross, step: 0.0001, placeholder: "1.23 => 1.23%" %>
+
+<%= f.label :net %>
+<%= f.number_field :net, step: 0.0001, placeholder: "1.23 => 1.23%" %>
+
+<%= f.label :fund_return %>
+<%= f.number_field :fund_return, step: 0.0001, placeholder: "1.23 => 1.23%" %>
+
+<%= f.submit "Submit month", class: "btn btn-large btn-primary" %>
+
+</fieldset>

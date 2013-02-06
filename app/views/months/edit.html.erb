@@ -1,0 +1,10 @@
+<h1>Update Month: <%= @month.mend %></h1>
+
+
+		<%= form_for @month do |f| %>
+
+			<%= render 'shared/error_messages', object: f.object %>
+			
+			<%= render 'shared/month_form', f: f %>
+
+		<% end %>

@@ -1,0 +1,9 @@
+<fieldset>
+<%= render 'shared/error_messages' , object: f.object %>
+
+<%= f.label :name %>
+<%= f.text_field :name %>
+
+<%= f.submit "Submit fund", class: "btn btn-large btn-primary" %>
+
+</fieldset>

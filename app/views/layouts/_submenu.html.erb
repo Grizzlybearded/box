@@ -1,0 +1,16 @@
+<% if current_user %>
+<ul>
+	<li><%= link_to_unless_current 'Current Month', current_path %></li>
+	--------------------
+	<% if current_user.global_admin? %>
+		<li><%= link_to_unless_current 'HF Index', funds_path %></li>
+		<li><%= link_to_unless_current 'User Index', users_path %></li>
+		<li><%= link_to_unless_current 'Investor Index', investors_path %></li>
+		--------------------
+	<% end %>
+		<li>My Funds</li>
+	<% current_user.investor.funds.each do |f| %>
+		<li><%= link_to_unless_current f.name, f %></li>
+	<% end %>
+</ul>
+<% end %>

@@ -1,0 +1,18 @@
+<h1>Investors index</h1>
+
+<fieldset>
+<ul>
+	<% @investors.each do |f| %>
+	<li>
+		<%= link_to f.name, f %>
+		| <%= link_to 'Edit', edit_investor_path(f) %>
+		| <%= link_to 'Destroy', f, method: :delete, data: {confirm: "Your sure?"} %>
+	</li>
+	<% end %>
+</ul>
+
+<div class="row">
+	<%= link_to "Create new investor", new_investor_path, class: "btn btn-large btn-primary" %>
+</div>
+
+</fieldset>

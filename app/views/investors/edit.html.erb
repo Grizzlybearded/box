@@ -1,0 +1,9 @@
+<h1>Edit <%= @investor.name %></h1>
+
+<fieldset>
+	<%= form_for @investor do |f| %>
+
+	<%= render 'shared/investor_form', f: f %>
+
+	<% end %>
+</fieldset>

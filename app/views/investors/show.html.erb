@@ -1,0 +1,25 @@
+<h1><%= @investor.name %></h1>
+
+
+	<table>
+		<tr>
+			<th>Name</th>
+			<th>Email</th>
+		</tr>
+		<% @investor.users.each do |f| %>
+			<% if f.name.present? %>
+				<tr>
+					<td><%= f.name %></td>
+					<td><%= f.email %></td>
+				</tr>
+			<% end %>
+		<% end %>		
+	</table>
+<fieldset>
+	<%= form_for @user do |f| %>
+
+	<%= hidden_field_tag 'user[investor_id]', @investor.id %>
+	<%= render 'shared/user_form', f: f %>
+
+	<% end %>
+</fieldset>

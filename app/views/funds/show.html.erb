@@ -1,0 +1,74 @@
+<h1><%= @fund.name %></h1>
+
+<% go = [] %>
+<% @fund.months.each do |f| %>
+	<% go << f unless f.id.nil? %>
+<% end %>
+
+<%= content_tag :div, "", id: "months_chart", data: {months: go} %>
+
+<fieldset>
+	<% if current_user.global_admin? %>
+		<div>
+			<%= form_tag relationships_path do %>
+				<%= hidden_field_tag :fund_id, @fund.id %>
+				<%= label_tag :name, 'Add Investor' %>
+				<%= text_field_tag :name, params[:name] %>
+				<%= submit_tag "Submit" %>
+			<% end %>
+		</div>
+	<% end %>
+<div>
+	<% if @fund.investors.present? && current_user.global_admin? %>
+		<ul>
+			<% @fund.investors.order("name ASC").each do |f| %>
+				<li>
+					<%= link_to f.name, f %>
+					| <%= link_to 'Destroy', @fund.relationships.find_by_investor_id(f.id), method: :delete, data: {confirm: "Are you sure?"} %>
+				</li>
+			<% end %>
+		</ul>
+	<% end %>
+</div>
+</fieldset>
+<div class="row">
+		<table class="center">
+			<tr>
+				<th>Month</th>
+				<th>AUM</th>
+				<th>Gross</th>
+				<th>Net</th>
+				<th>Return</th>
+				<% if current_user.global_admin? %>
+					<th>Edit</th>
+					<th>Destroy</th>
+				<% end %>	
+			</tr>
+
+			<% @fund.months.each do |f| %>
+				<% if f.id.present? %>
+				<tr>
+					<td><%= f.mend.strftime("%b-%y") %></td>
+					<td><%= number_with_delimiter(f.aum) %></td>
+					<td><%= number_to_percentage(f.gross, precision: 2) %></td>
+					<td><%= number_to_percentage(f.net, precision: 2) %></td>
+					<td><%= number_to_percentage(f.fund_return, precision: 2) %></td>
+					<% if current_user.global_admin? %>	
+						<td><%= link_to 'Edit', edit_month_path(f) %></td>
+						<td><%= link_to 'Destroy', f, method: :delete, data: {confirm: "You sure?"} %></td>
+					<% end %>	
+				</tr>
+				<% end %>
+			<% end %>
+		</table>
+</div>
+<% if current_user.global_admin? %>
+	<%= form_for(@month) do |builder| %>
+		<%= render 'shared/error_messages' , object: builder.object %>
+
+		<%= hidden_field_tag 'month[fund_id]', @fund.id %>
+
+		<%= render 'shared/month_form', f: builder %>
+		
+	<% end %>
+<% end %>

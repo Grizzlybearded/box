@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  mend: 2013-01-21
+  fund_id: 1
+  gross: 9.99
+  net: 9.99
+  aum: 1
+
+two:
+  mend: 2013-01-21
+  fund_id: 1
+  gross: 9.99
+  net: 9.99
+  aum: 1

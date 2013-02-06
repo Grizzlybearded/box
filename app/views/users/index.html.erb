@@ -1,0 +1,18 @@
+<h1>Users Index</h1>
+
+<fieldset>
+<ul>
+	<% @users.each do |f| %>
+		<li>
+			<%= f.name %>
+			| <%= link_to f.investor.name, f.investor %>
+			<% if current_user.global_admin? %>
+				| <%= link_to "Edit", edit_user_path(f) %>
+				<% if !current_user?(f) %>
+					| <%= link_to "Destroy", f, method: :delete, data: {confirm: "You sure?"} %>
+				<% end %>
+			<% end %>	
+		</li>
+	<% end %>
+</ul>
+</fieldset>
