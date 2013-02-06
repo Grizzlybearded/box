@@ -4,7 +4,10 @@ gem 'rails', '3.2.8'
 gem 'bootstrap-sass', '2.1'
 gem 'bcrypt-ruby', '3.0.1'
 gem 'faker', '1.0.1'
-gem 'pg'
+
+group :production do
+	gem 'pg', '0.12.2'
+end
 
 
 # Gems used only for assets and not required
@@ -22,6 +25,7 @@ end
 
 group :development do
 	gem 'annotate', '2.5.0'
+	gem 'sqlite3', '1.3.5'
 end
 
 gem 'jquery-rails'
