@@ -4,7 +4,7 @@ gem 'rails', '3.2.8'
 gem 'bootstrap-sass', '2.1'
 gem 'bcrypt-ruby', '3.0.1'
 gem 'faker', '1.0.1'
-gem 'sqlite3'
+gem 'pg'
 
 
 # Gems used only for assets and not required
