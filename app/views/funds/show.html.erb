@@ -7,6 +7,43 @@
 
 <%= content_tag :div, "", id: "months_chart", data: {months: go} %>
 
+<div>
+	<table>
+		<tr>
+			<td></td>
+			<td>Jan</td>
+			<td>Feb</td>
+			<td>Mar</td>
+			<td>Apr</td>
+			<td>May</td>
+			<td>Jun</td>
+			<td>Jul</td>
+			<td>Aug</td>
+			<td>Sep</td>
+			<td>Oct</td>
+			<td>Nov</td>
+			<td>Dec</td>
+			<td>YTD</td>
+		</tr>
+		<% @parent_array.each do |p_index| %>
+			<tr>
+				<% p_index.each do |c_index| %>
+					<td style="text-align:right">
+						<% if c_index.present? %>
+							<% if c_index > 1000 %>
+								<%= c_index %>
+							<% else %>
+								<%= number_to_percentage(c_index, precision: 1) %>
+							<% end %>
+						<% end %>
+					</td>
+				<% end %>
+			</tr>
+		<% end %>
+	</table>
+</div>
+
+
 <fieldset>
 	<% if current_user.global_admin? %>
 		<div>
@@ -31,37 +68,9 @@
 	<% end %>
 </div>
 </fieldset>
-<div class="row">
-		<table class="center">
-			<tr>
-				<th>Month</th>
-				<th>AUM</th>
-				<th>Gross</th>
-				<th>Net</th>
-				<th>Return</th>
-				<% if current_user.global_admin? %>
-					<th>Edit</th>
-					<th>Destroy</th>
-				<% end %>	
-			</tr>
 
-			<% @fund.months.each do |f| %>
-				<% if f.id.present? %>
-				<tr>
-					<td><%= f.mend.strftime("%b-%y") %></td>
-					<td><%= number_with_delimiter(f.aum) %></td>
-					<td><%= number_to_percentage(f.gross, precision: 2) %></td>
-					<td><%= number_to_percentage(f.net, precision: 2) %></td>
-					<td><%= number_to_percentage(f.fund_return, precision: 2) %></td>
-					<% if current_user.global_admin? %>	
-						<td><%= link_to 'Edit', edit_month_path(f) %></td>
-						<td><%= link_to 'Destroy', f, method: :delete, data: {confirm: "You sure?"} %></td>
-					<% end %>	
-				</tr>
-				<% end %>
-			<% end %>
-		</table>
-</div>
+
+
 <% if current_user.global_admin? %>
 	<%= form_for(@month) do |builder| %>
 		<%= render 'shared/error_messages' , object: builder.object %>

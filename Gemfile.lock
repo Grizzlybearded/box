@@ -1,3 +1,10 @@
+GIT
+  remote: git://github.com/rweng/jquery-datatables-rails.git
+  revision: 2024c99b26f94a036629ac04bd158c70d2f4f11b
+  specs:
+    jquery-datatables-rails (1.11.1)
+      jquery-rails
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -49,8 +56,6 @@ GEM
     hike (1.2.1)
     i18n (0.6.1)
     journey (1.0.4)
-    jquery-datatables-rails (1.11.2)
-      jquery-rails
     jquery-rails (2.2.0)
       railties (>= 3.0, < 5.0)
       thor (>= 0.14, < 2.0)
@@ -118,7 +123,7 @@ DEPENDENCIES
   bootstrap-sass (= 2.1)
   coffee-rails (~> 3.2.2)
   faker (= 1.0.1)
-  jquery-datatables-rails
+  jquery-datatables-rails!
   jquery-rails
   pg (= 0.12.2)
   rails (= 3.2.11)

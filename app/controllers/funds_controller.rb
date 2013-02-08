@@ -23,6 +23,46 @@ before_filter :authorize_ga, except: [:show]
 	def show
 		@fund = Fund.find(params[:id])
 		@month = @fund.months.build
+
+		#find the minimum and maximum dates/years.  store the diff+1 in a variable - loop until we are greater than the variable
+		@parent_array = []
+		@child_array = []
+		@year = Month.where(fund_id: @fund.id).minimum(:mend).year
+		while @year < (Month.where(fund_id: @fund.id).maximum(:mend).year + 1) do
+			#create conditions for the mend to be pulled
+			@local_months = {}
+
+			Month.where(fund_id: @fund.id, mend: ( Date.new(@year,1,1)..Date.new(@year,12,1) ) ).each{|date| @local_months[date.mend] = date}
+
+			#iterate through 1-12 for each month.  push into the child array
+			for i in 1..12
+				# if month of object == loop, then save in x, else x = nil
+				if @local_months[Date.new(@year,i,1)].present?
+					@child_array << @local_months[Date.new(@year,i,1)].fund_return
+				else
+					@child_array << nil
+				end
+			end
+		@ytd = @child_array.reject{|n| n==nil}.map{|n| (n/100.0)+1}.inject{|product,x| product*x}
+		
+		if !@ytd.nil?
+			@ytd = (@ytd - 1)*100.0
+		end
+		
+		#store the ytd value in the child_array
+		@child_array<< @ytd
+		
+		#put the year in the front of the array
+		@child_array.unshift(@year)
+		
+		#store the child_array in the parent_array and reset for the next loop
+		@parent_array << @child_array
+		@child_array = []
+		@year += 1
+		end 
+
+		#create a helper for getting the total return for a year.  Pass in a fund and the year.  
+		#loop through each month, do the calc, and store the result in a local variable which gets returned
 	end
 
 	def edit
