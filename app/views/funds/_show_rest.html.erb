@@ -1,0 +1,79 @@
+<div>
+	<table>
+		<tr>
+			<td></td>
+			<td>Jan</td>
+			<td>Feb</td>
+			<td>Mar</td>
+			<td>Apr</td>
+			<td>May</td>
+			<td>Jun</td>
+			<td>Jul</td>
+			<td>Aug</td>
+			<td>Sep</td>
+			<td>Oct</td>
+			<td>Nov</td>
+			<td>Dec</td>
+			<td>YTD</td>
+		</tr>
+		<% @parent_array.each do |p_index| %>
+			<tr>
+				<% p_index.each do |c_index| %>
+					<td style="text-align:right">
+						<% if c_index.present? %>
+							<% if c_index > 1000 %>
+								<%= c_index %>
+							<% else %>
+								<%= number_to_percentage(c_index, precision: 1) %>
+							<% end %>
+						<% end %>
+					</td>
+				<% end %>
+			</tr>
+		<% end %>
+	</table>
+</div>
+
+<div>
+	<% if current_user.global_admin? %>
+		<%= link_to 'Admin Show', show_for_admin_fund_path(@fund) %>
+	<% end %>	
+</div>
+
+<fieldset>
+	<% if current_user.global_admin? %>
+		<div>
+			<%= form_tag relationships_path do %>
+				<%= hidden_field_tag :fund_id, @fund.id %>
+				<%= label_tag :name, 'Add Investor' %>
+				<%= text_field_tag :name, params[:name] %>
+				<%= submit_tag "Submit" %>
+			<% end %>
+		</div>
+	<% end %>
+<div>
+	<% if @fund.investors.present? && current_user.global_admin? %>
+		<ul>
+			<% @fund.investors.order("name ASC").each do |f| %>
+				<li>
+					<%= link_to f.name, f %>
+					| <%= link_to 'Destroy', @fund.relationships.find_by_investor_id(f.id), method: :delete, data: {confirm: "Are you sure?"} %>
+				</li>
+			<% end %>
+		</ul>
+	<% end %>
+</div>
+</fieldset>
+
+
+
+<% if current_user.global_admin? %>
+	<%= form_for(@month) do |builder| %>
+		<%= render 'shared/error_messages' , object: builder.object %>
+
+		<%= hidden_field_tag 'month[fund_id]', @fund.id %>
+
+		<%= render 'shared/month_form', f: builder %>
+		
+	<% end %>
+<% end %>

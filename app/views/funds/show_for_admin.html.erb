@@ -1,0 +1,15 @@
+
+
+<uL>
+	<% @fund.months.each do |f| %>
+		<li>
+			<%= f.mend %>
+			| <%= f.aum %>
+			| <%= f.gross %>
+			| <%= f.net %>
+			| <%= f.fund_return %>
+			| <%= link_to 'Edit', edit_month_path(f) %>
+			| <%= link_to 'Destroy', f, method: :delete, data: {confirm: "You sure"} %>
+		</li>
+	<% end %>
+</uL>

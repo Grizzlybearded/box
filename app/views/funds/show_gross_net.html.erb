@@ -6,7 +6,7 @@
 <% end %>
 
 <div style="padding:10px">
-	<%= content_tag :div, "", id: "aum_chart", data: {months: go} %><br/>
+	<%= content_tag :div, "", id: "gross_net_chart", data: {months: go} %>
 	<%= link_to_unless_current 'AUM', @fund %>
 	| <%= link_to_unless_current 'Gross/Net', show_gross_net_fund_path %>
 	| <%= link_to_unless_current 'Return', show_cumulative_return_fund_path %>

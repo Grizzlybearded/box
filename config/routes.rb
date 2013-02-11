@@ -4,13 +4,21 @@ Box::Application.routes.draw do
   resources :investors
   resources :sessions, only: [:new, :create, :destroy]
   resources :users, only: [:create, :destroy, :edit, :update, :index]
-  resources :funds
+  resources :funds do
+    member do
+      get :show_for_admin
+      get :show_gross_net
+      get :show_cumulative_return
+    end
+  end
+
   resources :months do
     collection { post :import }
   end
 
-  match 'login', to: 'sessions#new'
+  match '/login', to: 'sessions#new'
   match '/current', to:'months#current_month'
+  match '/current_rates', to: 'months#current_month_rates'
 
   root to: 'months#current_month'
 

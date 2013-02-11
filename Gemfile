@@ -4,6 +4,7 @@ gem 'rails', '3.2.11'
 gem 'bootstrap-sass', '2.1'
 gem 'bcrypt-ruby', '3.0.1'
 gem 'faker', '1.0.1'
+gem 'jquery-datatables-rails', github: 'rweng/jquery-datatables-rails'
 
 group :production do
 	gem 'pg', '0.12.2'
@@ -15,8 +16,6 @@ end
 group :assets do
   gem 'sass-rails',   '~> 3.2.5'
   gem 'coffee-rails', '~> 3.2.2'
-  gem 'jquery-datatables-rails', github: 'rweng/jquery-datatables-rails'
-
   # See https://github.com/sstephenson/execjs#readme for more supported runtimes
   # gem 'therubyracer', :platforms => :ruby
 

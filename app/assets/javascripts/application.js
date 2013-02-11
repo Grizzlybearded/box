@@ -14,5 +14,5 @@
 //= require jquery_ujs
 //= require raphael
 //= require morris
-//= require dataTables/jquery.dataTables
+//= require dataTables/jquery.dataTables.bootstrap
 //= require_tree .

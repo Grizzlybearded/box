@@ -2,14 +2,8 @@
 # All this logic will automatically be available in application.js.
 # You can use CoffeeScript in this file: http://jashkenas.github.com/coffee-script/
 
-$(document).ready ->
-  $("#current").dataTable
-    aaSorting: []     # disable default sort (remove this line to enable it)
-    bPaginate: false  # Remove pagination
-    bFilter: false    # Remove filter
-    bInfo: false      # Remove useless info
-    # Columns with .unsortable class are not sortable
-    aoColumnDefs : [
-      'bSortable': false,
-      'aTargets': ['unsortable']
-    ]
+jQuery ->
+  $('#funds').dataTable({
+    "sDom": "<'row-fluid'<'span6'l><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
+    "sPaginationType": "bootstrap"
+    });

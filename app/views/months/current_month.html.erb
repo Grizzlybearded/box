@@ -1,9 +1,12 @@
 <% if current_user %>
 
 <h1>Current Month - <%= @max %></h1>
+<div style="margin-left:30px">
+<%= link_to_unless_current "Levels", current_path %> | <%= link_to_unless_current "Rates", current_rates_path %>
+</div>
 
-	<div>
-		<table id="current" class="table-sortable">
+		<table id="funds">
+			<caption>Current Levels</caption>
 			<thead>
 			<tr>
 				<th>Fund</th>
@@ -32,9 +35,8 @@
 				<% end %>
 			<% end %>
 			</tbody>
-
 		</table>
-	</div>
+
 
 <% if current_user.global_admin? %>
 	<h2>Import Data</h2>

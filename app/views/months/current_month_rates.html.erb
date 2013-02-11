@@ -1,0 +1,34 @@
+<h1>Current Month - Rates</h1>
+
+
+<div style="margin-left:30px">
+<%= link_to_unless_current "Levels", current_path %> | <%= link_to_unless_current "Rates", current_rates_path %>
+</div>
+<div>
+<table>
+	<caption>3 Month Changes</caption>
+	<tr>
+
+		<th>Fund</th>
+		<th>AUM (% change)</th>
+		<th>Gross (% diff)</th>
+		<th>Net (% diff)</th>
+		<th>Return (% change)</th>
+	</tr>
+	<% @parent_array.each do |f| %>
+		<tr>
+			<% f.each do |i| %>
+				<td style="text-align:center">
+					<% if i.present? %>
+						<% if i.kind_of?(Fund) %>
+							<%= link_to i.name, i %>
+						<% else %>
+							<%= number_to_percentage(i, precision: 2) %>
+						<% end %>	
+					<% end %>
+				</td>
+			<% end %>
+		</tr>
+	<% end %>
+</table>
+</div>
