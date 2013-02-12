@@ -1,6 +1,6 @@
 class FundsController < ApplicationController
 before_filter :authorize_user
-before_filter :authorize_ga, except: [:show]
+before_filter :authorize_ga, except: [:show, :show_gross_net, :show_cumulative_return]
 
 	def new
 		@fund = Fund.new

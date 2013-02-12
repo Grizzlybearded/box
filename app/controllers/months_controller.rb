@@ -1,6 +1,6 @@
 class MonthsController < ApplicationController
 before_filter :authorize_user, except: [:current_month]
-before_filter :authorize_ga, except: [:current_month]
+before_filter :authorize_ga, except: [:current_month, :current_month_rates]
 
 	def create
 		@month = Month.new(params[:month])
