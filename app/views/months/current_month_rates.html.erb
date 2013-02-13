@@ -18,7 +18,7 @@
 	<% @parent_array.each do |f| %>
 		<tr>
 			<% f.each do |i| %>
-				<td style="text-align:center">
+				<td>
 					<% if i.present? %>
 						<% if i.kind_of?(Fund) %>
 							<%= link_to i.name, i %>

@@ -210,7 +210,7 @@ table th {
   text-shadow: rgba(255, 255, 255, 0.796875) 0px 1px 0px;
   font-weight: normal;
   padding: 7px 7px 8px;
-  text-align: left;
+  text-align: center;
   line-height: 1.3em;
   font-size: 14px;
 }
@@ -218,7 +218,7 @@ table th {
 table td {
   padding: 4px 7px 2px;
   vertical-align: top;
-  text-align: left;
+  text-align: center;
 }
 
 /* navigation on the left side */
@@ -242,21 +242,3 @@ fieldset {
   width: 40%;
   margin: 0 auto;
 }
-
-/* dataTables */
-
-table.table thead .sorting,
-table.table thead .sorting_asc,
-table.table thead .sorting_desc,
-table.table thead .sorting_asc_disabled,
-table.table thead .sorting_desc_disabled {
-    cursor: pointer;
-    *cursor: hand;
-}
- 
-table.table thead .sorting { background: url('images/sort_both.png') no-repeat center right; }
-table.table thead .sorting_asc { background: url('images/sort_asc.png') no-repeat center right; }
-table.table thead .sorting_desc { background: url('images/sort_desc.png') no-repeat center right; }
- 
-table.table thead .sorting_asc_disabled { background: url('images/sort_asc_disabled.png') no-repeat center right; }
-table.table thead .sorting_desc_disabled { background: url('images/sort_desc_disabled.png') no-repeat center right; }
