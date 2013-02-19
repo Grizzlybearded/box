@@ -1,0 +1,70 @@
+
+<div>
+	<% if current_user.global_admin? %>
+		<%= link_to 'Admin Show', show_for_admin_fund_path(@fund) %>
+	<% end %>	
+</div>
+
+<fieldset>
+	<% if current_user.global_admin? %>
+		<div>
+			<%= form_tag relationships_path do %>
+				<%= hidden_field_tag :fund_id, @fund.id %>
+				<%= label_tag :name, 'Add Investor' %>
+				<%= text_field_tag :name, params[:name] %>
+				<%= submit_tag "Submit" %>
+			<% end %>
+		</div>
+	<% end %>
+<div>
+	<% if @fund.investors.present? && current_user.global_admin? %>
+		<ul>
+			<% @fund.investors.order("name ASC").each do |f| %>
+				<li>
+					<%= link_to f.name, f %>
+					| <%= link_to 'Destroy', @fund.relationships.find_by_investor_id(f.id), method: :delete, data: {confirm: "Are you sure?"} %>
+				</li>
+			<% end %>
+		</ul>
+	<% end %>
+</div>
+<div>
+	<% if current_user.global_admin? %>
+
+		<div>
+			<%= form_tag trackers_path do %>
+				<%= hidden_field_tag :fund_id, @fund.id %>
+				<%= label_tag :name, 'Add Benchmark' %>
+				<%= text_field_tag :name, params[:name] %>
+				<%= submit_tag "Submit" %>
+			<% end %>
+		</div><br/>
+
+		<div>
+		<% if @fund.benchmarks.present? %>
+			<ul>
+				<% @fund.benchmarks.each do |f| %>
+					<li>
+						<%= f.name %> | <%= link_to 'Destroy', @fund.trackers.find_by_benchmark_id(f.id), method: :delete, data: {confirm: "Are you sure?"} %>
+					</li>
+				<% end %>
+			</ul>
+		<% end %>
+		</div>
+
+	<% end %>
+</div>
+</fieldset>
+
+
+
+<% if current_user.global_admin? %>
+	<%= form_for(@month) do |builder| %>
+		<%= render 'shared/error_messages' , object: builder.object %>
+
+		<%= hidden_field_tag 'month[fund_id]', @fund.id %>
+
+		<%= render 'shared/month_form', f: builder %>
+		
+	<% end %>
+<% end %>

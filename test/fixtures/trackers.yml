@@ -1,0 +1,9 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  fund_id: 1
+  benchmark_id: 1
+
+two:
+  fund_id: 1
+  benchmark_id: 1

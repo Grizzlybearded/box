@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130206050922) do
+ActiveRecord::Schema.define(:version => 20130218025346) do
 
   create_table "funds", :force => true do |t|
     t.string   "name"
@@ -42,6 +42,15 @@ ActiveRecord::Schema.define(:version => 20130206050922) do
     t.datetime "created_at",  :null => false
     t.datetime "updated_at",  :null => false
   end
+
+  create_table "trackers", :force => true do |t|
+    t.integer  "fund_id"
+    t.integer  "benchmark_id"
+    t.datetime "created_at",   :null => false
+    t.datetime "updated_at",   :null => false
+  end
+
+  add_index "trackers", ["fund_id", "benchmark_id"], :name => "index_trackers_on_fund_id_and_benchmark_id", :unique => true
 
   create_table "users", :force => true do |t|
     t.string   "email"

@@ -1,14 +1,13 @@
 Box::Application.routes.draw do
 
   resources :relationships, only: [:create, :destroy]
+  resources :trackers, only: [:create, :destroy]
   resources :investors
   resources :sessions, only: [:new, :create, :destroy]
   resources :users, only: [:create, :destroy, :edit, :update, :index]
   resources :funds do
     member do
       get :show_for_admin
-      get :show_gross_net
-      get :show_cumulative_return
     end
   end
 
