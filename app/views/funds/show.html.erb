@@ -19,8 +19,8 @@
 		<% @funds_array.each do |f|%>
 			<tr>
 				<td><%= f.name %></td>
-				<td><%= number_to_percentage(ann_return_by_date(f), precision: 2) %></td>
-				<td><%= number_to_percentage(ann_st_dev(f), precision: 2) %></td>
+				<td><%= number_to_percentage(ann_return_by_date(f)*100.0, precision: 2) %></td>
+				<td><%= number_to_percentage(ann_st_dev(f)*100.0, precision: 2) %></td>
 				<td><%= number_to_percentage(max_drawdown(f), precision: 2) %></td>
 				<td><%= number_to_percentage(current_drawdown(f), precision: 2) %></td>
 				<td><%= highwater_date(f).strftime("%b-%y") %></td>
@@ -31,11 +31,11 @@
 					<td></td>
 					<td></td>
 				<% else %>
-					<td><%= number_with_precision(beta(@fund, f)/100.0, precision: 2) %></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
+					<td><%= number_with_precision(beta(@fund, f), precision: 2) %></td>
+					<td><%= number_to_percentage(alpha(@fund, f), precision: 2) %></td>
+					<td><%= number_to_percentage(correlation(@fund, f)*100.0, precision: 2) %></td>
+					<td><%= number_to_percentage(up_capture(@fund,f)*100.0, precision: 2) %></td>
+					<td><%= number_to_percentage(down_capture(@fund,f)*100.0, precision: 2) %></td>
 				<% end %>
 			</tr>
 		<% end %>
@@ -46,6 +46,7 @@
 		<% go << f unless f.id.nil? %>
 	<% end %>
 
+	<fieldset style="width:70%">
 	<div style="padding:10px">
 		<%= content_tag :div, "", id: (@show_var + "_chart"), data: {months: go} %><br/>
 
@@ -53,7 +54,37 @@
 		| <%= link_to 'Gross/Net', controller: "funds", action: "show", show_var: "gross_net" %>
 		| <%= link_to 'Return', controller: "funds", action: "show", show_var: "cumulative_return" %>
 	</div><br/>
+	</fieldset>
 
+	<table>
+		<tr>
+			<th></th>
+			<% @perf_header.each do |f| %>
+				<th><%= f %></th>
+			<% end %>
+		</tr>
+		<% @funds_array.each do |f| %>
+			<tr>
+				<td><%= f.name %></td>
+				<% @perf_months_ago.each do |n| %>
+					<% if @fund_dates[0] <= n %>
+						<td><%= number_to_percentage(calc_ann_return(get_returns( f, n, nil))*100.0, precision: 2) %></td>
+					<% else %>
+						<td>--</td>
+					<% end %>
+				<% end %>
+			</tr>
+		<% end %>
+	</table><br/>
+
+	<table>
+		<tr>
+			<th></th>
+		</tr>
+		<tr>
+			<td></td>
+		</tr>
+	</table>
 
 	<table>
 		<tr>

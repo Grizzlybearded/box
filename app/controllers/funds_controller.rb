@@ -24,14 +24,26 @@ before_filter :authorize_ga, except: [:show]
 		@fund = Fund.find(params[:id])
 		@month = @fund.months.build
 
-		@funds_array = @fund.benchmarks
-		@funds_array.unshift(@fund)
+		@fund_dates = start_end_dates(@fund)
+
+		@funds_array = @fund.benchmarks.unshift(@fund)
 
 		if params[:show_var].present?
 			@show_var = params[:show_var]
 		else
 			@show_var = "aum"
 		end
+
+		@perf_header = 		["1m", "3m", "6m", "1yr", "2yr", "3yr", "5yr", "7yr", "10yr"]
+		@perf_months_ago = 	[@fund_dates[1],
+								@fund_dates[1].months_ago(2),
+								@fund_dates[1].months_ago(5),
+								@fund_dates[1].months_ago(11),
+								@fund_dates[1].months_ago(23),
+								@fund_dates[1].months_ago(35),
+								@fund_dates[1].months_ago(59),
+								@fund_dates[1].months_ago(83),
+								@fund_dates[1].months_ago(119)]
 
 		#find the minimum and maximum dates/years.  store the diff+1 in a variable - loop until we are greater than the variable
 		@parent_array = []
