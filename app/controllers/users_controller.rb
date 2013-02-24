@@ -7,7 +7,8 @@ before_filter :authorize_ga
 		if @user.save
 			redirect_to :back, notice: "New user created!"
 		else
-			render 'new'
+			flash[:notice] = "User not created"
+			redirect_to :back
 		end
 	end
 

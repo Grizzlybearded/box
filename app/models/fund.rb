@@ -8,7 +8,7 @@ class Fund < ActiveRecord::Base
   has_many :investors, through: :relationships
 
   has_many :trackers, dependent: :destroy
-  has_many :benchmarks, through: :trackers
+  has_many :benchmarks, through: :trackers, dependent: :destroy
 
   accepts_nested_attributes_for :months, allow_destroy: true
 

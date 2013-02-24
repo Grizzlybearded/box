@@ -1,13 +1,31 @@
-<h1><%= @fund.name %> (<%= @fund.months.first.mend.strftime("%b %y") %>-<%= @fund.months[-2].mend.strftime("%b %y") %>)</h1>
+
+<% if @fund_dates[0].present? %>
+<h1><%= @fund.name %></h1>
 
 <div>
-	<br/>
+	<h2>Performance Comparison</h2>
 	<table>
+		<caption align="bottom">
+			Data range is <%= @new_fund_dates[0].strftime("%b-%y") %> to <%= @new_fund_dates[1].strftime("%b-%y") %>.
+			<% if @new_fund_dates[1] != @fund_dates[1] %>
+				 Returns will include <%= @fund_dates[1].strftime("%b-%y") %> when data for indices is received.
+			<% end %>
+			<% if @removed_funds.present? %>
+				<% @removed_funds.each do |f| %>
+					<% if f == @removed_funds[0] %>
+						<%= f.name %>
+					<% else %>
+						and <% f.name %>
+					<% end %>
+				<% end %>
+				will be added when recent month data is received.
+			<% end %>
+
+		</caption>		
 		<tr>
-			<th>
+			<th width="100px"></th>
 			<th>Ann Return</th>
 			<th>Ann Volatility</th>
-			<th>Max Drawdown</th>
 			<th>Current Drawdown</th>
 			<th>Highwater Date</th>
 			<th>Beta</th>
@@ -16,12 +34,11 @@
 			<th>Up Capture</th>
 			<th>Down Capture</th>
 		</tr>
-		<% @funds_array.each do |f|%>
+		<% @funds_array.each do |f| %>
 			<tr>
-				<td><%= f.name %></td>
-				<td><%= number_to_percentage(ann_return_by_date(f)*100.0, precision: 2) %></td>
-				<td><%= number_to_percentage(ann_st_dev(f)*100.0, precision: 2) %></td>
-				<td><%= number_to_percentage(max_drawdown(f), precision: 2) %></td>
+				<td><%= link_to f.name, f %></td>
+				<td><%= number_to_percentage(ann_return_by_date(f, @new_fund_dates[0], @new_fund_dates[1])*100.0, precision: 2) %></td>
+				<td><%= number_to_percentage(ann_st_dev(f, @new_fund_dates[0], @new_fund_dates[1])*100.0, precision: 2) %></td>
 				<td><%= number_to_percentage(current_drawdown(f), precision: 2) %></td>
 				<td><%= highwater_date(f).strftime("%b-%y") %></td>
 				<% if f == @fund %>
@@ -31,61 +48,83 @@
 					<td></td>
 					<td></td>
 				<% else %>
-					<td><%= number_with_precision(beta(@fund, f), precision: 2) %></td>
-					<td><%= number_to_percentage(alpha(@fund, f), precision: 2) %></td>
-					<td><%= number_to_percentage(correlation(@fund, f)*100.0, precision: 2) %></td>
-					<td><%= number_to_percentage(up_capture(@fund,f)*100.0, precision: 2) %></td>
-					<td><%= number_to_percentage(down_capture(@fund,f)*100.0, precision: 2) %></td>
+					<td><%= number_with_precision(beta(@fund, f, @new_fund_dates[0], @new_fund_dates[1]), precision: 2) %></td>
+					<td><%= number_to_percentage(alpha(@fund, f, @new_fund_dates[0], @new_fund_dates[1])*100.0, precision: 2) %></td>
+					<td><%= number_to_percentage(correlation(@fund, f, @new_fund_dates[0], @new_fund_dates[1])*100.0, precision: 2) %></td>
+					<td><%= number_to_percentage(up_capture(@fund,f, @new_fund_dates[0], @new_fund_dates[1])*100.0, precision: 2) %></td>
+					<td><%= number_to_percentage(down_capture(@fund,f, @new_fund_dates[0], @new_fund_dates[1])*100.0, precision: 2) %></td>
 				<% end %>
 			</tr>
 		<% end %>
 	</table><br/>
 
-	<% go = [] %>
-	<% @fund.months.each do |f| %>
-		<% go << f unless f.id.nil? %>
-	<% end %>
-
+	<h2>Cumulative Return Graph</h2>
 	<fieldset style="width:70%">
-	<div style="padding:10px">
-		<%= content_tag :div, "", id: (@show_var + "_chart"), data: {months: go} %><br/>
-
-		<%= link_to 'AUM', controller: "funds", action: "show", show_var: "aum" %>
-		| <%= link_to 'Gross/Net', controller: "funds", action: "show", show_var: "gross_net" %>
-		| <%= link_to 'Return', controller: "funds", action: "show", show_var: "cumulative_return" %>
-	</div><br/>
+		<%= content_tag :div, "", id: ("cumulative_return_chart"), data: {months: @chart_arr, names: @new_fund_names} %>
 	</fieldset>
 
+	<h2>Performance Comparison Over Time Periods</h2>
 	<table>
+		<caption align="bottom">All returns longer than 1 year are annualized.  The most recent month is <%= @new_fund_dates[1].strftime("%b-%y") %>.</caption>
 		<tr>
 			<th></th>
 			<% @perf_header.each do |f| %>
 				<th><%= f %></th>
 			<% end %>
 		</tr>
-		<% @funds_array.each do |f| %>
+		<% @new_funds_array.each do |f| %>
 			<tr>
-				<td><%= f.name %></td>
+				<td><%= link_to f.name, f %></td>
 				<% @perf_months_ago.each do |n| %>
-					<% if @fund_dates[0] <= n %>
-						<td><%= number_to_percentage(calc_ann_return(get_returns( f, n, nil))*100.0, precision: 2) %></td>
+
+					<% if f == @fund %>
+						<% if @new_fund_dates[0] <= n %>
+							<td>
+								<%= number_to_percentage(calc_ann_return(get_returns( f, n, @new_fund_dates[1]))*100.0, precision: 2) %>
+							</td>
+						<% else %>
+							<td></td>
+						<% end %>
 					<% else %>
-						<td>--</td>
+						<td>
+							<%= number_to_percentage(calc_ann_return(get_returns( f, n, @new_fund_dates[1]))*100.0, precision: 2) %>
+						</td>
+					<% end %>
+				<% end %>
+			</tr>
+		<% end %>
+	</table><br/>
+	
+	<table>
+		<caption align="bottom">
+			<% if @fund_dates[0].month != Date.new(2000,1,1).month %>
+				<%= @fund.name %> data is partial in <%= @new_fund_dates[0].year %>.
+			<% end %>
+		</caption>
+		<tr>
+			<th></th>
+			<% @years_header.each do |f| %>
+				<th><%= f %></th>
+			<% end %>
+		</tr>
+		<% @all_funds_and_years.each do |f| %>
+			<tr>
+				<% for i in 0..9 %>
+					<% if f[i].present? %>
+						<% if f[i].kind_of?(Fund) %>
+							<td><%= link_to f[i].name, f[i] %></td>
+						<% else %>
+							<td><%= number_to_percentage(f[i] * 100.0, precision: 2) %></td>
+						<% end %>
+					<% else %>
+						<td></td>
 					<% end %>
 				<% end %>
 			</tr>
 		<% end %>
 	</table><br/>
 
-	<table>
-		<tr>
-			<th></th>
-		</tr>
-		<tr>
-			<td></td>
-		</tr>
-	</table>
-
+	<h2><%= @fund.name %> Historical Performance</h2>
 	<table>
 		<tr>
 			<td></td>
@@ -122,3 +161,9 @@
 </div>
 
 <%= render 'show_admin_info' %>
+
+<% else %>
+
+	<h1><%= @fund.name %></h1>
+
+<% end %>

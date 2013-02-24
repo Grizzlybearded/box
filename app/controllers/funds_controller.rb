@@ -26,26 +26,95 @@ before_filter :authorize_ga, except: [:show]
 
 		@fund_dates = start_end_dates(@fund)
 
-		@funds_array = @fund.benchmarks.unshift(@fund)
+		#only have 2 benchmarks in the show view
+		@funds_array = @fund.benchmarks.limit(2).unshift(@fund)
+		@new_funds_array = adjust_funds_array(@funds_array , @fund_dates[1], @fund_dates[1].months_ago(1))
+		@new_fund_dates = adjust_to_same_dates(@new_funds_array)
 
-		if params[:show_var].present?
-			@show_var = params[:show_var]
-		else
-			@show_var = "aum"
+		#get fund names for graph labels
+		@new_fund_names = @funds_array.map{|n| n.name}
+
+		@removed_funds = @funds_array - @new_funds_array
+
+		if @fund_dates[0].present?
+			@chart_arr = hash_arr_cumulative_ret(@funds_array[0],@funds_array[1] ? @funds_array[1] : nil, @funds_array[2] ? @funds_array[2] : nil, @new_fund_dates[0], @new_fund_dates[1])
+
+			if params[:show_var].present?
+				@show_var = params[:show_var]
+			else
+				@show_var = "aum"
+			end
+
+			@perf_header = 		["1m", "3m", "6m", "1yr", "2yr", "3yr", "5yr", "7yr", "10yr"]
+			@perf_months_ago = 	[@new_fund_dates[1],
+									@new_fund_dates[1].months_ago(2),
+									@new_fund_dates[1].months_ago(5),
+									@new_fund_dates[1].months_ago(11),
+									@new_fund_dates[1].months_ago(23),
+									@new_fund_dates[1].months_ago(35),
+									@new_fund_dates[1].months_ago(59),
+									@new_fund_dates[1].months_ago(83),
+									@new_fund_dates[1].months_ago(119)]
+
+			
+			@years_header = [@new_fund_dates[1].year,
+								@new_fund_dates[1].years_ago(1).year,
+								@new_fund_dates[1].years_ago(2).year,
+								@new_fund_dates[1].years_ago(3).year,
+								@new_fund_dates[1].years_ago(4).year,
+								@new_fund_dates[1].years_ago(5).year,
+								@new_fund_dates[1].years_ago(6).year,
+								@new_fund_dates[1].years_ago(7).year,
+								@new_fund_dates[1].years_ago(8).year]
+
+			# get arrays for each fund with the yearly returns
+			# use parent and child array structure again
+			@all_funds_and_years = []
+			@all_years_for_fund = []
+			
+			@funds_array.each do |f|
+				@perf_year = @new_fund_dates[1].year
+				while ((@new_fund_dates[1].year - @perf_year) <= 9)
+					
+
+					#THIS DOESN'T CHECK FOR INDICES THAT HAVE RETURNS THAT START AFTER 9 YEARS AGO.  WILL GET A NIL ERROR IN CALC_ANN_RETURN WHEN THIS OCCUR
+
+
+					if f == @fund && (@perf_year >= @new_fund_dates[0].year)
+						if @perf_year == @new_fund_dates[1].year
+							# checks during the chronological last year
+							@all_years_for_fund << calc_ann_return(get_returns(f, Date.new(@perf_year,1,1),@new_fund_dates[1]))
+							@all_years_for_fund.unshift(f)
+						elsif @perf_year == @new_fund_dates[0].year
+							# checks for the chronological first year
+							@all_years_for_fund << calc_ann_return(get_returns(f, @new_fund_dates[0], Date.new(@perf_year,12,1)))
+						else
+							@all_years_for_fund << calc_ann_return(get_returns(f, Date.new(@perf_year,1,1), Date.new(@perf_year,12,1)))
+						end
+					elsif f != @fund
+						if @perf_year == @new_fund_dates[1].year
+							# checks during the chronological last year
+							@all_years_for_fund << calc_ann_return(get_returns(f, Date.new(@perf_year,1,1),@new_fund_dates[1]))
+							@all_years_for_fund.unshift(f)
+						else
+							@all_years_for_fund << calc_ann_return(get_returns(f, Date.new(@perf_year,1,1), Date.new(@perf_year,12,1)))
+						end
+					end
+					#iterate
+					@perf_year = @perf_year - 1
+				end
+				#store in the parent array unless the there are not values in the array
+				if @all_years_for_fund.present?
+					@all_funds_and_years << @all_years_for_fund
+				end
+				#clear child array
+				@all_years_for_fund = []
+			end
 		end
 
-		@perf_header = 		["1m", "3m", "6m", "1yr", "2yr", "3yr", "5yr", "7yr", "10yr"]
-		@perf_months_ago = 	[@fund_dates[1],
-								@fund_dates[1].months_ago(2),
-								@fund_dates[1].months_ago(5),
-								@fund_dates[1].months_ago(11),
-								@fund_dates[1].months_ago(23),
-								@fund_dates[1].months_ago(35),
-								@fund_dates[1].months_ago(59),
-								@fund_dates[1].months_ago(83),
-								@fund_dates[1].months_ago(119)]
+		#for the funds controller in the show action
 
-		#find the minimum and maximum dates/years.  store the diff+1 in a variable - loop until we are greater than the variable
+ 		#find the minimum and maximum dates/years.  store the diff+1 in a variable - loop until we are greater than the variable
 		@parent_array = []
 		@child_array = []
 		@year = Month.where(fund_id: @fund.id).minimum(:mend).year

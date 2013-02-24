@@ -192,7 +192,7 @@ table {
   margin: 0 auto;
   border: 1px solid #DFDFDF;
   background-color: #F9F9F9;
-  width: 80%;
+  width: 90%;
   -moz-border-radius: 3px;
   -webkit-border-radius: 3px;
   border-radius: 3px;
@@ -242,3 +242,32 @@ fieldset {
   width: 40%;
   margin: 0 auto;
 }
+
+/* morris */
+
+.morris-hover {
+  /* position:absolute;
+  z-index:1000; */
+  width: 30%;
+}
+.morris-hover.morris-default-style {
+  border-radius:10px;
+  padding:6px;
+  color:#666;
+  background:rgba(255, 255, 255, 0.8);border:solid 2px rgba(230, 230, 230, 0.8);
+  font-family:sans-serif;font-size:12px;text-align:center;
+}
+
+.morris-hover.morris-default-style .morris-hover-row-label {
+  font-weight:bold;
+  margin:0.25em 0;
+  margin-left: 0;
+}
+
+.morris-hover.morris-default-style .morris-hover-point {
+  white-space:nowrap;
+  margin:0.1em 0;
+}
+
+
+

@@ -17,10 +17,25 @@
 #15) make all names case insensitive in the models  
 #16) make users only able to belong to 1 fund (make unique by email address)
 #17) in the submenu, the link_to Current_Month does not de-link when logging in because it is calling root, not current_month.  make the current_month link de-link when logging in and being directed to root.
+#18) CREATE EDIT PAGE FOR EACH MONTH
 
 USER
 a) DONE - header: if logged_in? get rid of "Log In Link"
 b) DONE - add before_filters everywhere   
 c) DONE - move CREATE USER to the INVESTOR SHOW PAGE
 
- 
+	
+
+	#the corresponding code for the show view for funds
+
+	
+
+	<th>Max Drawdown</th>
+
+	<td><%= number_to_percentage(max_drawdown(f, @new_fund_dates[0], @new_fund_dates[1]), precision: 2) %></td>
+	
+
+
+
+
+

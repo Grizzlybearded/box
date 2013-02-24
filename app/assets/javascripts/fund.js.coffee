@@ -22,11 +22,12 @@ jQuery ->
         labels: ['Gross','Net']
       })
     if($('#cumulative_return_chart').length > 0)
-      Morris.Bar({
+      Morris.Line({
         element: 'cumulative_return_chart',
         data: $('#cumulative_return_chart').data('months'),
-        postUnits: '%'
-        xkey: 'mend',
-        ykeys: ['fund_return'],
-        labels: ['Return']
+        xkey: 'date',
+        ykeys: ['fund_one', 'fund_two', 'fund_three'],
+        ymax: 'auto',
+        hideHover: false,
+        labels: $('#cumulative_return_chart').data('names')
       })
