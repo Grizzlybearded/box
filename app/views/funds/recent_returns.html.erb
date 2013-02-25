@@ -1,28 +1,30 @@
 <h1>Recent Returns</h1>
 
-<table style="width:55%">
-	<caption align="bottom">
-		Funds that don't have data for <%= @recent_date.strftime("%b-%y") %>: 
-		<% if @removed_funds.present? %>
-			<% @removed_funds.each do |f| %>
-				<% if f == @removed_funds.first %>
-					<%= link_to f.name, f %>
-				<% else %>
-					, <%= link_to f.name, f %>
+<% if @recent_date.present? %>
+	<table style="width:55%">
+		<caption align="bottom">
+			<% if @removed_funds.present? %>
+			Funds that don't have data for <%= @recent_date.strftime("%b-%y") %>: 
+				<% @removed_funds.each do |f| %>
+					<% if f == @removed_funds.first %>
+						<%= link_to f.name, f %>
+					<% else %>
+						, <%= link_to f.name, f %>
+					<% end %>
 				<% end %>
 			<% end %>
-		<% end %>
-	</caption>
-	<tr>
-		<th>Fund</th>
-		<th><%= @recent_date.year %> YTD</th>
-		<th>Last 12 Months</th>
-	</tr>
-	<% @funds_with_date.each do |f| %>
+		</caption>
 		<tr>
-			<td style="text-align:left"><%= link_to f.name , f %></td>
-			<td><%= number_to_percentage(calc_ann_return(get_returns(f, Date.new(@recent_date.year,1,1,), Date.new(@recent_date.year, 12,1))) * 100, precision: 2) %></td>
-			<td><%= number_to_percentage(calc_ann_return(get_returns(f, @recent_date.years_ago(1), @recent_date)) * 100, precision: 2) %></td>
+			<th>Fund</th>
+			<th><%= @recent_date.year %> YTD</th>
+			<th>Last 12 Months</th>
 		</tr>
-	<% end %>	
-</table>
+		<% @funds_with_date.each do |f| %>
+			<tr>
+				<td style="text-align:left"><%= link_to f.name , f %></td>
+				<td><%= number_to_percentage(calc_ann_return(get_returns(f, Date.new(@recent_date.year,1,1,), Date.new(@recent_date.year, 12,1))) * 100, precision: 2) %></td>
+				<td><%= number_to_percentage(calc_ann_return(get_returns(f, @recent_date.years_ago(1), @recent_date)) * 100, precision: 2) %></td>
+			</tr>
+		<% end %>	
+	</table>
+<% end %>
