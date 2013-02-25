@@ -1,9 +1,21 @@
-<h1>Recent Returns Through <%= @recent_date.strftime("%b-%y") %></h1>
+<h1>Recent Returns</h1>
 
 <table style="width:55%">
+	<caption align="bottom">
+		Funds that don't have data for <%= @recent_date.strftime("%b-%y") %>: 
+		<% if @removed_funds.present? %>
+			<% @removed_funds.each do |f| %>
+				<% if f == @removed_funds.first %>
+					<%= link_to f.name, f %>
+				<% else %>
+					, <%= link_to f.name, f %>
+				<% end %>
+			<% end %>
+		<% end %>
+	</caption>
 	<tr>
 		<th>Fund</th>
-		<th><%= @recent_date.year %></th>
+		<th><%= @recent_date.year %> YTD</th>
 		<th>Last 12 Months</th>
 	</tr>
 	<% @funds_with_date.each do |f| %>
