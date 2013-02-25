@@ -1,6 +1,6 @@
 class FundsController < ApplicationController
 before_filter :authorize_user
-before_filter :authorize_ga, except: [:show]
+before_filter :authorize_ga, except: [:show, :highwater_mark, :recent_returns]
 
 	def new
 		@fund = Fund.new
@@ -187,6 +187,7 @@ before_filter :authorize_ga, except: [:show]
 
 		#store the funds that have the max date
 		@funds_with_date = Month.where(mend: @recent_date, fund_id: @fund_ids).map{|n| n.fund}
+
 
 		while ( (@funds_with_date.count / (@funds_array.count * 1.0)) < 0.6 )
 			@recent_date = @recent_date.months_ago(1)
