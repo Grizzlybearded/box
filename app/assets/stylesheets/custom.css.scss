@@ -227,14 +227,13 @@ submenu {
   float: left;
   list-style: none;
   padding-top: 15px;
-  padding-right: 33px;
-  padding-left: 25px;
+  padding-right: 10px;
+  padding-left: 10px;
   margin-left: -23px;
   li {
     list-style-type: none;
   }
 }
-
 
 /* fields */
 
@@ -248,7 +247,7 @@ fieldset {
 .morris-hover {
   /* position:absolute;
   z-index:1000; */
-  width: 30%;
+  width: 35%;
 }
 .morris-hover.morris-default-style {
   border-radius:10px;

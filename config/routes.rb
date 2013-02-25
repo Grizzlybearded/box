@@ -15,11 +15,12 @@ Box::Application.routes.draw do
     collection { post :import }
   end
 
+  match '/highwater_mark', to: 'funds#highwater_mark'
   match '/login', to: 'sessions#new'
   match '/current', to:'months#current_month'
   match '/current_rates', to: 'months#current_month_rates'
 
-  root to: 'months#current_month'
+  root to: 'funds#recent_returns'
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

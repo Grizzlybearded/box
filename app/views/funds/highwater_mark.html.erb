@@ -1,0 +1,18 @@
+<h1>Highwater Mark</h1>
+
+<% if @funds_array.present? %>
+	<table style="width:55%">
+		<tr>
+			<th>Fund</th>
+			<th>Current Drawdown</th>
+			<th>Highwater Date</th>
+		</tr>
+		<% @funds_array.each do |f| %>
+			<tr>
+				<td style="text-align:left"><%= link_to f.name, f %></td>
+				<td><%= number_to_percentage(current_drawdown(f), precision: 2)%></td>
+				<td><%= highwater_date(f).strftime("%b-%y") %></td>
+			</tr>
+		<% end %>
+	</table>
+<% end %>

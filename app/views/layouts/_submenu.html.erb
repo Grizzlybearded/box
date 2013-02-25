@@ -1,6 +1,7 @@
 <% if current_user %>
 <ul>
-	<li><%= link_to_unless_current 'Current Month', current_path %></li>
+	<li><%= link_to_unless_current 'Flash Returns', root_path %></li>
+	<li><%= link_to_unless_current 'Highwater Mark', highwater_mark_path %></li>
 	--------------------
 	<% if current_user.global_admin? %>
 		<li><%= link_to_unless_current 'HF Index', funds_path %></li>
@@ -10,7 +11,7 @@
 	<% end %>
 		<li>My Funds</li>
 	<% current_user.investor.funds.each do |f| %>
-		<li><%= link_to_unless_current f.name, f %></li>
+		<li style="margin-left:10px"><%= link_to_unless_current truncate(f.name, length: 20), f %></li>
 	<% end %>
 </ul>
 <% end %>

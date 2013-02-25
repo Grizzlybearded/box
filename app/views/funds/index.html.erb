@@ -18,3 +18,18 @@
 		<%= link_to "Create new fund", new_fund_path, class: "btn btn-large btn-primary" %>
 	</div>
 </div>
+
+<% if current_user.global_admin? %>
+	<h2>Import Data</h2>
+
+	<%= form_tag import_months_path, multipart: true do %>
+		<%= file_field_tag :file %>
+		<%= submit_tag "Import" %>
+	<% end %>
+<% end %>
+<% else %>
+	<h1>Log In</h1>
+	<%= form_tag sessions_path do %>
+		<%= render 'shared/session_form' %>
+	<% end %>
+<% end %>

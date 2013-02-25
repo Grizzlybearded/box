@@ -28,15 +28,16 @@ before_filter :authorize_ga, except: [:show]
 
 		#only have 2 benchmarks in the show view
 		@funds_array = @fund.benchmarks.limit(2).unshift(@fund)
-		@new_funds_array = adjust_funds_array(@funds_array , @fund_dates[1], @fund_dates[1].months_ago(1))
-		@new_fund_dates = adjust_to_same_dates(@new_funds_array)
-
-		#get fund names for graph labels
-		@new_fund_names = @funds_array.map{|n| n.name}
-
-		@removed_funds = @funds_array - @new_funds_array
 
 		if @fund_dates[0].present?
+
+			@new_funds_array = adjust_funds_array(@funds_array , @fund_dates[1], @fund_dates[1].months_ago(1))
+			@new_fund_dates = adjust_to_same_dates(@new_funds_array)
+
+			#get fund names for graph labels
+			@new_fund_names = @funds_array.map{|n| n.name}
+			@removed_funds = @funds_array - @new_funds_array
+
 			@chart_arr = hash_arr_cumulative_ret(@funds_array[0],@funds_array[1] ? @funds_array[1] : nil, @funds_array[2] ? @funds_array[2] : nil, @new_fund_dates[0], @new_fund_dates[1])
 
 			if params[:show_var].present?
@@ -110,46 +111,44 @@ before_filter :authorize_ga, except: [:show]
 				#clear child array
 				@all_years_for_fund = []
 			end
-		end
 
-		#for the funds controller in the show action
-
- 		#find the minimum and maximum dates/years.  store the diff+1 in a variable - loop until we are greater than the variable
-		@parent_array = []
-		@child_array = []
-		@year = Month.where(fund_id: @fund.id).minimum(:mend).year
-		while @year < (Month.where(fund_id: @fund.id).maximum(:mend).year + 1) do
-			#create conditions for the mend to be pulled
-			@local_months = {}
-
-			Month.where(fund_id: @fund.id, mend: ( Date.new(@year,1,1)..Date.new(@year,12,1) ) ).each{|date| @local_months[date.mend] = date}
-
-			#iterate through 1-12 for each month.  push into the child array
-			for i in 1..12
-				# if month of object == loop, then save in x, else x = nil
-				if @local_months[Date.new(@year,i,1)].present?
-					@child_array << @local_months[Date.new(@year,i,1)].fund_return
-				else
-					@child_array << nil
-				end
-			end
-			@ytd = @child_array.reject{|n| n==nil}.map{|n| (n/100.0)+1}.inject{|product,x| product*x}
-		
-			if !@ytd.nil?
-				@ytd = (@ytd - 1)*100.0
-			end
-		
-			#store the ytd value in the child_array
-			@child_array<< @ytd
-		
-			#put the year in the front of the array
-			@child_array.unshift(@year)
-		
-			#store the child_array in the parent_array and reset for the next loop
-			@parent_array << @child_array
+			#find the minimum and maximum dates/years.  store the diff+1 in a variable - loop until we are greater than the variable
+			@parent_array = []
 			@child_array = []
-			@year += 1
-		end
+			@year = Month.where(fund_id: @fund.id).minimum(:mend).year
+			while @year < (Month.where(fund_id: @fund.id).maximum(:mend).year + 1) do
+				#create conditions for the mend to be pulled
+				@local_months = {}
+
+				Month.where(fund_id: @fund.id, mend: ( Date.new(@year,1,1)..Date.new(@year,12,1) ) ).each{|date| @local_months[date.mend] = date}
+
+				#iterate through 1-12 for each month.  push into the child array
+				for i in 1..12
+					# if month of object == loop, then save in x, else x = nil
+					if @local_months[Date.new(@year,i,1)].present?
+						@child_array << @local_months[Date.new(@year,i,1)].fund_return
+					else
+						@child_array << nil
+					end
+				end
+				@ytd = @child_array.reject{|n| n==nil}.map{|n| (n/100.0)+1}.inject{|product,x| product*x}
+			
+				if !@ytd.nil?
+					@ytd = (@ytd - 1)*100.0
+				end
+			
+				#store the ytd value in the child_array
+				@child_array<< @ytd
+			
+				#put the year in the front of the array
+				@child_array.unshift(@year)
+			
+				#store the child_array in the parent_array and reset for the next loop
+				@parent_array << @child_array
+				@child_array = []
+				@year += 1
+			end
+		end 		
 	end
 
 	def edit
@@ -176,4 +175,24 @@ before_filter :authorize_ga, except: [:show]
 		redirect_to funds_path
 	end
 
+	def highwater_mark
+		@funds_array = current_user.investor.funds
+	end
+
+	def recent_returns
+		@recent_date = Month.maximum(:mend)
+		@funds_array = current_user.investor.funds
+
+		@fund_ids = @funds_array.map{|n| n.id}
+
+		#store the funds that have the max date
+		@funds_with_date = Month.where(mend: @recent_date, fund_id: @fund_ids).map{|n| n.fund}
+
+		while ( (@funds_with_date.count / (@funds_array.count * 1.0)) < 0.6 )
+			@recent_date = @recent_date.months_ago(1)
+			@funds_with_date = Month.where(mend: @recent_date, fund_id: @fund_ids).map{|n| n.fund}
+		end
+		
+		@removed_funds = @funds_array - @funds_with_date
+	end
 end

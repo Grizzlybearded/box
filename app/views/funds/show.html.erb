@@ -61,7 +61,7 @@
 	<h2>Cumulative Return Graph</h2>
 	<fieldset style="width:70%">
 		<%= content_tag :div, "", id: ("cumulative_return_chart"), data: {months: @chart_arr, names: @new_fund_names} %>
-	</fieldset>
+	</fieldset><br/>
 
 	<h2>Performance Comparison Over Time Periods</h2>
 	<table>
@@ -97,7 +97,7 @@
 	
 	<table>
 		<caption align="bottom">
-			<% if @fund_dates[0].month != Date.new(2000,1,1).month %>
+			<% if @fund_dates[0].month != Date.new(2000,1,1).month && @fund_dates[0].year >= @new_fund_dates[1].years_ago(8).year %>
 				<%= @fund.name %> data is partial in <%= @new_fund_dates[0].year %>.
 			<% end %>
 		</caption>
@@ -160,10 +160,10 @@
 	</table>
 </div>
 
-<%= render 'show_admin_info' %>
-
 <% else %>
 
 	<h1><%= @fund.name %></h1>
 
 <% end %>
+
+<%= render 'show_admin_info' %>
