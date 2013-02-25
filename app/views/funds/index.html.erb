@@ -26,10 +26,5 @@
 		<%= file_field_tag :file %>
 		<%= submit_tag "Import" %>
 	<% end %>
-<% end %>
-<% else %>
-	<h1>Log In</h1>
-	<%= form_tag sessions_path do %>
-		<%= render 'shared/session_form' %>
-	<% end %>
+
 <% end %>
