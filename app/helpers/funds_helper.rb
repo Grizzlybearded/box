@@ -238,16 +238,17 @@ module FundsHelper
 	end
 
 	def highwater_date(fund, start_date = nil, end_date = nil)
-		
 		if fund.present?
 			@returns = array_of_cumulative_return(fund, start_date, end_date)
 			@index = @returns.each_with_index.max[1] - 1
 			
-			@first_month = fund.months.first.mend
-
-			@diff = (start_date.year - @first_month.year)*12 + (start_date.month - @first_month.month)		
-
-			return fund.months[@index].mend.months_since(@diff)
+			if start_date.present?
+				@first_month = fund.months.first.mend
+				@diff = (start_date.year - @first_month.year)*12 + (start_date.month - @first_month.month)		
+				return fund.months[@index].mend.months_since(@diff)
+			else
+				return fund.months[@index].mend
+			end
 		end
 	end
 

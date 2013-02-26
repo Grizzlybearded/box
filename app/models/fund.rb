@@ -1,5 +1,5 @@
 class Fund < ActiveRecord::Base
-  attr_accessible :name, :months_attributes
+  attr_accessible :name, :months_attributes, :type
   validates :name, presence: true
   default_scope order: 'LOWER(funds.name)'
 
