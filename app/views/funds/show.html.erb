@@ -39,8 +39,8 @@
 				<td><%= link_to f.name, f %></td>
 				<td><%= number_to_percentage(ann_return_by_date(f, @new_fund_dates[0], @new_fund_dates[1])*100.0, precision: 2) %></td>
 				<td><%= number_to_percentage(ann_st_dev(f, @new_fund_dates[0], @new_fund_dates[1])*100.0, precision: 2) %></td>
-				<td><%= number_to_percentage(current_drawdown(f), precision: 2) %></td>
-				<td><%= highwater_date(f).strftime("%b-%y") %></td>
+				<td><%= number_to_percentage(current_drawdown(f, @new_fund_dates[0], @new_fund_dates[1]), precision: 2) %></td>
+				<td><%= highwater_date(f, @new_fund_dates[0], @new_fund_dates[1]).strftime("%b-%y") %></td>
 				<% if f == @fund %>
 					<td></td>
 					<td></td>
