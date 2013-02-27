@@ -4,6 +4,10 @@
 <%= f.label :name %>
 <%= f.text_field :name %>
 
+<%= f.label :fund_type, "Fund Type" %>
+<%= f.select :fund_type, Fund::VALID_FUND_TYPES, {:include_blank => true, :default => nil} %>
+
+
 <%= f.submit "Submit fund", class: "btn btn-large btn-primary" %>
 
 </fieldset>

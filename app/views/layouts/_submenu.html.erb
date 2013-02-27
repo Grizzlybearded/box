@@ -10,8 +10,15 @@
 		--------------------
 	<% end %>
 		<li>My Funds</li>
-	<% current_user.investor.funds.each do |f| %>
-		<li style="margin-left:10px"><%= link_to_unless_current truncate(f.name, length: 20), f %></li>
-	<% end %>
+		<% Fund::VALID_FUND_TYPES.each do |i| %>
+			<% if current_user.investor.funds.where(fund_type: i).present? %>
+				<li><%= i %><li>
+			<% end %>
+			<% current_user.investor.funds.where(fund_type: i).each do |f| %>
+				<li style="margin-left:10px">
+					<%= link_to_unless_current truncate(f.name, length: 20), f %>
+				</li>
+			<% end %>
+		<% end %>
 </ul>
 <% end %>
