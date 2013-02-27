@@ -2,7 +2,7 @@ class Fund < ActiveRecord::Base
   attr_accessible :name, :months_attributes, :fund_type
   validates :name, presence: true
 
-  VALID_FUND_TYPES = ['Emerging Markets', 'Equity L/S', 'Equity L/S Sector' 'Equity Long', 'Equity Market Neutral', 'Event Driven', 'Global Macro', 'Managed Futures', 'Multi-Strategy',] 
+  VALID_FUND_TYPES = ['Emerging Markets', 'Equity L/S', 'Equity L/S Sector', 'Equity Long', 'Equity Market Neutral', 'Event Driven', 'Global Macro', 'Managed Futures', 'Multi-Strategy',] 
   validates :fund_type,
   	inclusion: { :in => VALID_FUND_TYPES,
   	message: "%{value} is not a valid fund type" },
