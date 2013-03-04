@@ -1,4 +1,4 @@
-module FundsHelper
+	module FundsHelper
 	require 'matrix'
 
 	def months_in_current_drawdown(fund)
@@ -186,7 +186,7 @@ module FundsHelper
 
 	def array_of_cumulative_return(fund, start_date = nil, end_date = nil)
 		@returns = get_returns(fund, start_date, end_date)
-		@cumulative_array = [1.0]
+		@cumulative_array = [1.00]
 		
 		# make array with hashes for graphing
 		# ADD DATES TO THIS OR IT WON'T GRAPH
@@ -195,6 +195,34 @@ module FundsHelper
 			@cumulative_array[i+1] = (@cumulative_array[i]*(@returns[i] + 1.0))
 		end
 		return @cumulative_array
+	end
+
+	def hash_arr_cumulative_for_many_benchmarks(funds = [], start_date, end_date)
+		#get the number of months in the array
+		#use the array of cumulative return to get array.  merge with main hash - create a symbol depending on the # of the fund
+
+		@array_of_funds = funds
+		@diff = (end_date.year - start_date.year)*12 + (end_date.month - start_date.month)
+
+		#for each fund, get the cumulative array and merge it
+		@final_array = []
+
+		for i in 0..(@array_of_funds.count - 1)
+			@fund_cum_array = array_of_cumulative_return(@array_of_funds[i], start_date, end_date)
+
+			#if it's the first fund, then add the date also
+			if i == 0
+				for j in 0..(@fund_cum_array.count - 1)
+					@final_array[j] = {date: start_date.months_since(j-1), "fund_#{i}".parameterize.underscore.to_sym => (@fund_cum_array[j]*100.0).floor / 100.0 }
+				end
+			else
+				for j in 0..(@fund_cum_array.count - 1)
+					@final_array[j] = @final_array[j].merge!({ "fund_#{i}".parameterize.underscore.to_sym => (@fund_cum_array[j]*100.0).floor / 100.0 })
+				end
+			end
+		end
+
+		return @final_array
 	end
 
 	def hash_arr_cumulative_ret(fund_one, fund_two = nil, fund_three = nil, start_date = nil, end_date = nil)

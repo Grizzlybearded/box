@@ -5,6 +5,7 @@
 		<% @funds.each do |f| %>
 			<li>
 				<%= link_to f.name, f %>
+				| <%= f.bmark %>
 				| <%= link_to 'Edit', edit_fund_path(f) %>
 				| <%= link_to 'Destroy', f, method: :delete, data: {confirm: "You sure?"} %>
 			</li>

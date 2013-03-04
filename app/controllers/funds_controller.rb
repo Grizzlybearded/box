@@ -26,25 +26,64 @@ before_filter :authorize_ga, except: [:show, :highwater_mark, :recent_returns]
 
 		@fund_dates = start_end_dates(@fund)
 
-		#only have 2 benchmarks in the show view
-		@funds_array = @fund.benchmarks.limit(2).unshift(@fund)
+		#create benchmarks with user_id if not already done
+		if !@fund.trackers.where(user_id: current_user.id).present?		
+			@benchmark_ids = @fund.benchmarks.pluck(:benchmark_id)
+			@benchmark_ids.each do |b|
+				Tracker.new(fund_id: @fund.id, benchmark_id: b, user_id: current_user.id).save
+			end
+		end
+
+		#get benchmarks with the user id 
+		@benchmark_ids_for_funds_array = @fund.trackers.where(user_id: current_user.id).pluck(:benchmark_id)
+		@fund_bmark_false = Fund.where(id: @benchmark_ids_for_funds_array, bmark: false) #could be indices or regular funds currently
+		@fund_bmark_true = Fund.where(id: @benchmark_ids_for_funds_array, bmark: true) #could be indices or regular funds currently
+
+		@funds_array = (@fund_bmark_false + @fund_bmark_true).unshift(@fund)
+		#####
+		#NEED TO INSTANTIATE FUNDS_ARRAY BEFORE HERE
+		#####
+		#####
 
 		if @fund_dates[0].present?
 
-			@new_funds_array = adjust_funds_array(@funds_array , @fund_dates[1], @fund_dates[1].months_ago(1))
+			#after this if statement, don't use funds_array, instead use @new_funds_array
+			if @funds_array.count == 3
+				#takes funds out if they don't have the same two front months as the fund at hand
+				@new_funds_array = adjust_funds_array(@funds_array , @fund_dates[1], @fund_dates[1].months_ago(1))
+			else
+				@new_funds_array = @funds_array
+			end
+
 			@new_fund_dates = adjust_to_same_dates(@new_funds_array)
 
 			#get fund names for graph labels
-			@new_fund_names = @funds_array.map{|n| n.name}
+			@new_fund_names = @new_funds_array.map{|n| n.name}
 			@removed_funds = @funds_array - @new_funds_array
 
-			@chart_arr = hash_arr_cumulative_ret(@funds_array[0],@funds_array[1] ? @funds_array[1] : nil, @funds_array[2] ? @funds_array[2] : nil, @new_fund_dates[0], @new_fund_dates[1])
 
-			if params[:show_var].present?
-				@show_var = params[:show_var]
+			#THIS WILL NEED TO BE CHANGED WHEN THE INVESTOR SETTINGS ARE CHANGED
+			@arr_for_benchmark_autocomplete = @current_user.investor.funds.pluck(:name) + 
+				Fund.where(bmark: true).pluck(:name) - 
+				@funds_array.map{|f| f.name}
+
+			#FIX THE CHART SO IT CAN HAVE VARIABLE INPUTS
+			@ykeys_for_chart = []
+			if @new_funds_array.count == 3
+				@chart_arr = hash_arr_cumulative_ret(@new_funds_array[0],@new_funds_array[1] ? @new_funds_array[1] : nil, @new_funds_array[2] ? @new_funds_array[2] : nil, @new_fund_dates[0], @new_fund_dates[1])
+				@ykeys_for_chart = ['fund_one', 'fund_two', 'fund_three']
 			else
-				@show_var = "aum"
+				@chart_arr = hash_arr_cumulative_for_many_benchmarks(@new_funds_array,@new_fund_dates[0], @new_fund_dates[1])
+				for i in 0..(@new_funds_array.count - 1 )
+					@ykeys_for_chart[i] = "fund_#{i}"
+				end
 			end
+
+			#if params[:show_var].present?
+			#	@show_var = params[:show_var]
+			#else
+			#	@show_var = "aum"
+			#end
 
 			@perf_header = 		["1m", "3m", "6m", "1yr", "2yr", "3yr", "5yr", "7yr", "10yr"]
 			@perf_months_ago = 	[@new_fund_dates[1],
@@ -73,7 +112,7 @@ before_filter :authorize_ga, except: [:show, :highwater_mark, :recent_returns]
 			@all_funds_and_years = []
 			@all_years_for_fund = []
 			
-			@funds_array.each do |f|
+			@new_funds_array.each do |f|
 				@perf_year = @new_fund_dates[1].year
 				while ((@new_fund_dates[1].year - @perf_year) <= 9)
 					
@@ -81,7 +120,7 @@ before_filter :authorize_ga, except: [:show, :highwater_mark, :recent_returns]
 					#THIS DOESN'T CHECK FOR INDICES THAT HAVE RETURNS THAT START AFTER 9 YEARS AGO.  WILL GET A NIL ERROR IN CALC_ANN_RETURN WHEN THIS OCCUR
 
 
-					if f == @fund && (@perf_year >= @new_fund_dates[0].year)
+					if f == @fund && (@perf_year >= start_end_dates(f)[0].year)
 						if @perf_year == @new_fund_dates[1].year
 							# checks during the chronological last year
 							@all_years_for_fund << calc_ann_return(get_returns(f, Date.new(@perf_year,1,1),@new_fund_dates[1]))
@@ -92,7 +131,7 @@ before_filter :authorize_ga, except: [:show, :highwater_mark, :recent_returns]
 						else
 							@all_years_for_fund << calc_ann_return(get_returns(f, Date.new(@perf_year,1,1), Date.new(@perf_year,12,1)))
 						end
-					elsif f != @fund
+					elsif f != @fund && (@perf_year >= start_end_dates(f)[0].year)
 						if @perf_year == @new_fund_dates[1].year
 							# checks during the chronological last year
 							@all_years_for_fund << calc_ann_return(get_returns(f, Date.new(@perf_year,1,1),@new_fund_dates[1]))

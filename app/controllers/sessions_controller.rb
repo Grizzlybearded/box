@@ -22,7 +22,8 @@ class SessionsController < ApplicationController
   end
 
   def destroy
-  	session[:user_id] = nil
+  	Tracker.where(user_id: current_user.id).destroy_all
+    session[:user_id] = nil
   	redirect_to root_url, notice: "Logged out"
   end
 

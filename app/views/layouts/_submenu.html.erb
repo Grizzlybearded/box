@@ -1,6 +1,6 @@
 <% if current_user %>
 <ul>
-	<li><%= link_to_unless_current 'Flash Returns', root_path %></li>
+	<li><%= link_to_unless_current 'Recent Returns', root_path %></li>
 	<li><%= link_to_unless_current 'Highwater Mark', highwater_mark_path %></li>
 	--------------------
 	<% if current_user.global_admin? %>

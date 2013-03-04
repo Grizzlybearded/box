@@ -6,7 +6,7 @@
 	<h2>Performance Comparison</h2>
 	<table>
 		<caption align="bottom">
-			Data range is <%= @new_fund_dates[0].strftime("%b-%y") %> to <%= @new_fund_dates[1].strftime("%b-%y") %>.
+			Date range is <%= @new_fund_dates[0].strftime("%b-%y") %> to <%= @new_fund_dates[1].strftime("%b-%y") %>.
 			<% if @new_fund_dates[1] != @fund_dates[1] %>
 				 Returns will include <%= @fund_dates[1].strftime("%b-%y") %> when data for indices is received.
 			<% end %>
@@ -56,11 +56,21 @@
 				<% end %>
 			</tr>
 		<% end %>
-	</table><br/>
+	</table>
+	<div class="span4 offset7" style="vertical-align: bottom">
+		<%= form_tag trackers_path do %>
+			<%= hidden_field_tag :fund_id, @fund.id %>
+
+			<%= text_field_tag :benchmark_name, params[:benchmark_name], data: {autocomp: @arr_for_benchmark_autocomplete}, placeholder: "Enter fund or index..." %>
+
+			<%= submit_tag "Submit" %>
+		<% end %>
+	</div><br/>
+	<br/>
 
 	<h2>Cumulative Return Graph</h2>
 	<fieldset style="width:70%">
-		<%= content_tag :div, "", id: ("cumulative_return_chart"), data: {months: @chart_arr, names: @new_fund_names} %>
+		<%= content_tag :div, "", id: ("cumulative_return_chart"), data: {months: @chart_arr, names: @new_fund_names, keys: @ykeys_for_chart} %>
 	</fieldset><br/>
 
 	<h2>Performance Comparison Over Time Periods</h2>
@@ -76,19 +86,12 @@
 			<tr>
 				<td><%= link_to f.name, f %></td>
 				<% @perf_months_ago.each do |n| %>
-
-					<% if f == @fund %>
-						<% if @new_fund_dates[0] <= n %>
-							<td>
-								<%= number_to_percentage(calc_ann_return(get_returns( f, n, @new_fund_dates[1]))*100.0, precision: 2) %>
-							</td>
-						<% else %>
-							<td></td>
-						<% end %>
-					<% else %>
+					<% if start_end_dates(f)[0] <= n %>
 						<td>
 							<%= number_to_percentage(calc_ann_return(get_returns( f, n, @new_fund_dates[1]))*100.0, precision: 2) %>
 						</td>
+					<% else %>
+						<td></td>
 					<% end %>
 				<% end %>
 			</tr>
@@ -97,7 +100,8 @@
 	
 	<table>
 		<caption align="bottom">
-			<% if @fund_dates[0].month != Date.new(2000,1,1).month && @fund_dates[0].year >= @new_fund_dates[1].years_ago(8).year %>
+			<% if @new_fund_dates[0].month != Date.new(2000,1,1).month && @fund_dates[0].year >= @new_fund_dates[1].years_ago(8).year %>
+				FIX THIS
 				<%= @fund.name %> data is partial in <%= @new_fund_dates[0].year %>.
 			<% end %>
 		</caption>

@@ -11,13 +11,14 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130227032138) do
+ActiveRecord::Schema.define(:version => 20130304001314) do
 
   create_table "funds", :force => true do |t|
     t.string   "name"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at",                    :null => false
+    t.datetime "updated_at",                    :null => false
     t.string   "fund_type"
+    t.boolean  "bmark",      :default => false
   end
 
   create_table "investors", :force => true do |t|
@@ -49,9 +50,10 @@ ActiveRecord::Schema.define(:version => 20130227032138) do
     t.integer  "benchmark_id"
     t.datetime "created_at",   :null => false
     t.datetime "updated_at",   :null => false
+    t.integer  "user_id"
   end
 
-  add_index "trackers", ["fund_id", "benchmark_id"], :name => "index_trackers_on_fund_id_and_benchmark_id", :unique => true
+  add_index "trackers", ["fund_id", "benchmark_id", "user_id"], :name => "index_trackers_on_fund_id_and_benchmark_id_and_user_id", :unique => true
 
   create_table "users", :force => true do |t|
     t.string   "email"

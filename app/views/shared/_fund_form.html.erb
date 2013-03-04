@@ -1,13 +1,11 @@
-<fieldset>
-<%= render 'shared/error_messages' , object: f.object %>
-
 <%= f.label :name %>
 <%= f.text_field :name %>
 
 <%= f.label :fund_type, "Fund Type" %>
 <%= f.select :fund_type, Fund::VALID_FUND_TYPES, {:include_blank => true, :default => nil} %>
 
+<%= f.label :bmark, "Check if index" %>
+<%= f.check_box :bmark %><br />
+<br />
 
 <%= f.submit "Submit fund", class: "btn btn-large btn-primary" %>
-
-</fieldset>
