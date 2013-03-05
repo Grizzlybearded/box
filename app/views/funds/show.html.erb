@@ -57,16 +57,19 @@
 			</tr>
 		<% end %>
 	</table>
-	<div class="span4 offset7" style="vertical-align: bottom">
+
+	<div style="float:right; margin-bottom:0; margin-right: 5%" >
 		<%= form_tag trackers_path do %>
 			<%= hidden_field_tag :fund_id, @fund.id %>
-
-			<%= text_field_tag :benchmark_name, params[:benchmark_name], data: {autocomp: @arr_for_benchmark_autocomplete}, placeholder: "Enter fund or index..." %>
-
-			<%= submit_tag "Submit" %>
+			<div class="span3" style="float:left; margin-right:3px">
+				<%= text_field_tag :benchmark_name, params[:benchmark_name], data: {autocomp: @arr_for_benchmark_autocomplete}, placeholder: "Enter fund or index...", class: "padding: 5px" %>
+			</div>
+			<div style="float:right">	
+				<%= submit_tag "Add", class: "btn btn-medium btn-primary" %>
+			</div>
 		<% end %>
-	</div><br/>
-	<br/>
+	</div><br />
+	<br />
 
 	<h2>Cumulative Return Graph</h2>
 	<fieldset style="width:70%">
