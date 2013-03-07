@@ -163,7 +163,6 @@
 	<table>
 		<caption align="bottom">
 			<% if @new_fund_dates[0].month != Date.new(2000,1,1).month && @fund_dates[0].year >= @new_fund_dates[1].years_ago(8).year %>
-				FIX THIS
 				<%= @fund.name %> data is partial in <%= @new_fund_dates[0].year %>.
 			<% end %>
 		</caption>
