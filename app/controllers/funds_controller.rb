@@ -1,7 +1,7 @@
 class FundsController < ApplicationController
 before_filter :authorize_user
 before_filter :authorize_ga, except: [:show, :highwater_mark, :recent_returns]
-before_filter :is_investor, only: [:show]
+#before_filter :is_investor, only: [:show]
 
 	def new
 		@fund = Fund.new
