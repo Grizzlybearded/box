@@ -120,7 +120,7 @@
 		@returns = get_returns(fund, start_date, end_date)
 		@average = @returns.inject{|sum, x| sum + x}/@returns.count
 		@sum_of_diffs_squared = @returns.map{|n| ((n - @average)**2)}.inject{|sum,m| sum + m}
-		@variance = (@sum_of_diffs_squared/(@returns.count - 1)) 
+		@variance = (@sum_of_diffs_squared/(@returns.count)) 
 	end
 
 	def st_dev(fund, start_date = nil, end_date = nil)

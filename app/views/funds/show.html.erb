@@ -4,59 +4,118 @@
 
 <div>
 	<h2>Performance Comparison</h2>
-	<table>
-		<caption align="bottom">
-			Date range is <%= @new_fund_dates[0].strftime("%b-%y") %> to <%= @new_fund_dates[1].strftime("%b-%y") %>.
-			<% if @new_fund_dates[1] != @fund_dates[1] %>
-				 Returns will include <%= @fund_dates[1].strftime("%b-%y") %> when data for indices is received.
-			<% end %>
-			<% if @removed_funds.present? %>
-				<% @removed_funds.each do |f| %>
-					<% if f == @removed_funds[0] %>
-						<%= f.name %>
-					<% else %>
-						and <% f.name %>
+	<% if @new_funds_array.count <= 3 %>	
+		<table>
+			<caption align="bottom">
+				Date range is <%= @new_fund_dates[0].strftime("%b-%y") %> to <%= @new_fund_dates[1].strftime("%b-%y") %>.
+				<% if @new_fund_dates[1] != @fund_dates[1] %>
+					 Returns will include <%= @fund_dates[1].strftime("%b-%y") %> when data for all funds is received.
+				<% end %>
+				<% if @removed_funds.present? %>
+					<% @removed_funds.each do |f| %>
+						<% if f == @removed_funds[0] %>
+							<%= f.name %>
+						<% else %>
+							and <% f.name %>
+						<% end %>
 					<% end %>
+					will be added when recent month data is received.
 				<% end %>
-				will be added when recent month data is received.
-			<% end %>
-
-		</caption>		
-		<tr>
-			<th width="100px"></th>
-			<th>Ann Return</th>
-			<th>Ann Volatility</th>
-			<th>Current Drawdown</th>
-			<th>Highwater Date</th>
-			<th>Beta</th>
-			<th>Alpha</th>
-			<th>Correlation</th>
-			<th>Up Capture</th>
-			<th>Down Capture</th>
-		</tr>
-		<% @funds_array.each do |f| %>
+			</caption>		
 			<tr>
-				<td><%= link_to f.name, f %></td>
-				<td><%= number_to_percentage(ann_return_by_date(f, @new_fund_dates[0], @new_fund_dates[1])*100.0, precision: 2) %></td>
-				<td><%= number_to_percentage(ann_st_dev(f, @new_fund_dates[0], @new_fund_dates[1])*100.0, precision: 2) %></td>
-				<td><%= number_to_percentage(current_drawdown(f, @new_fund_dates[0], @new_fund_dates[1]), precision: 2) %></td>
-				<td><%= highwater_date(f, @new_fund_dates[0], @new_fund_dates[1]).strftime("%b-%y") %></td>
-				<% if f == @fund %>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-				<% else %>
-					<td><%= number_with_precision(beta(@fund, f, @new_fund_dates[0], @new_fund_dates[1]), precision: 2) %></td>
-					<td><%= number_to_percentage(alpha(@fund, f, @new_fund_dates[0], @new_fund_dates[1])*100.0, precision: 2) %></td>
-					<td><%= number_to_percentage(correlation(@fund, f, @new_fund_dates[0], @new_fund_dates[1])*100.0, precision: 2) %></td>
-					<td><%= number_to_percentage(up_capture(@fund,f, @new_fund_dates[0], @new_fund_dates[1])*100.0, precision: 2) %></td>
-					<td><%= number_to_percentage(down_capture(@fund,f, @new_fund_dates[0], @new_fund_dates[1])*100.0, precision: 2) %></td>
-				<% end %>
+				<th width="100px"></th>
+				<th>Ann Return</th>
+				<th>Ann Volatility</th>
+				<th>Current Drawdown</th>
+				<th>Highwater Date</th>
+				<th>Beta</th>
+				<th>Alpha</th>
+				<th>Correlation</th>
+				<th>Up Capture</th>
+				<th>Down Capture</th>
+				<th>Remove</th>
 			</tr>
-		<% end %>
-	</table>
+			<% @new_funds_array.each do |f| %>
+				<tr>
+					<td><%= link_to truncate(f.name, length: 20), f %></td>
+					<td><%= number_to_percentage(ann_return_by_date(f, @new_fund_dates[0], @new_fund_dates[1])*100.0, precision: 2) %></td>
+					<td><%= number_to_percentage(ann_st_dev(f, @new_fund_dates[0], @new_fund_dates[1])*100.0, precision: 2) %></td>
+					<td><%= number_to_percentage(current_drawdown(f, @new_fund_dates[0], @new_fund_dates[1]), precision: 2) %></td>
+					<td><%= highwater_date(f, @new_fund_dates[0], @new_fund_dates[1]).strftime("%b-%y") %></td>
+					<% if f == @fund %>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td>X</td>
+					<% else %>
+						<td><%= number_with_precision(beta(@fund, f, @new_fund_dates[0], @new_fund_dates[1]), precision: 2) %></td>
+						<td><%= number_to_percentage(alpha(@fund, f, @new_fund_dates[0], @new_fund_dates[1])*100.0, precision: 2) %></td>
+						<td><%= number_to_percentage(correlation(@fund, f, @new_fund_dates[0], @new_fund_dates[1])*100.0, precision: 2) %></td>
+						<td><%= number_to_percentage(up_capture(@fund,f, @new_fund_dates[0], @new_fund_dates[1])*100.0, precision: 2) %></td>
+						<td><%= number_to_percentage(down_capture(@fund,f, @new_fund_dates[0], @new_fund_dates[1])*100.0, precision: 2) %></td>
+						<% if !@fund.trackers.where(user_id: nil).pluck(:benchmark_id).include?(f.id) %>
+							<td><%= link_to 'X', @fund.trackers.find_by_benchmark_id_and_user_id(f.id, current_user.id), method: :delete %></td>
+						<% else %>
+							<td>X</td>
+						<% end %>
+					<% end %>
+				</tr>
+			<% end %>
+		</table>
+	<% else %>
+		<table>
+			<caption align="bottom">
+				Date range is <%= @new_fund_dates[0].strftime("%b-%y") %> to <%= @new_fund_dates[1].strftime("%b-%y") %>.
+				<% if @new_fund_dates[1] != @fund_dates[1] %>
+					 Returns will include <%= @fund_dates[1].strftime("%b-%y") %> when data for all funds is received.
+				<% end %>
+				<% if @removed_funds.present? %>
+					<% @removed_funds.each do |f| %>
+						<% if f == @removed_funds[0] %>
+							<%= f.name %>
+						<% else %>
+							and <% f.name %>
+						<% end %>
+					<% end %>
+					will be added when recent month data is received.
+				<% end %>
+			</caption>	
+			<tr>
+				<th>
+				<th>Ann Return</th>
+				<th>Ann Volatility</th>
+				<th>Beta to <%= @fund_bmark_true[0].name %></th>
+				<th>Alpha to <%= @fund_bmark_true[0].name %></th>
+				<th>Correl to <%= @fund_bmark_true[0].name %></th>
+				<th>Beta to <%= @fund_bmark_true[1].name %></th>
+				<th>Alpha to <%= @fund_bmark_true[1].name %></th>				
+				<th>Correl to <%= @fund_bmark_true[1].name %></th>
+				<th>Remove</th>
+			</tr>
+			<% @new_funds_array.each do |f| %>
+				<tr>
+					<td><%= link_to truncate(f.name, length: 24), f %></td>
+					<td><%= number_to_percentage(ann_return_by_date(f, @new_fund_dates[0], @new_fund_dates[1])*100.0, precision: 2) %></td>
+					<td><%= number_to_percentage(ann_st_dev(f, @new_fund_dates[0], @new_fund_dates[1])*100.0, precision: 2) %></td>
+					<td><%= number_with_precision(beta(f, @fund_bmark_true[0], @new_fund_dates[0], @new_fund_dates[1]), precision: 2) %></td>
+					<td><%= number_to_percentage(alpha(f, @fund_bmark_true[0], @new_fund_dates[0], @new_fund_dates[1])*100.0, precision: 2) %></td>
+					<td><%= number_to_percentage(correlation(f, @fund_bmark_true[0], @new_fund_dates[0], @new_fund_dates[1])*100.0, precision: 2) %></td>
+					<td><%= number_with_precision(beta(f, @fund_bmark_true[1], @new_fund_dates[0], @new_fund_dates[1]), precision: 2) %></td>
+					<td><%= number_to_percentage(alpha(f, @fund_bmark_true[1], @new_fund_dates[0], @new_fund_dates[1])*100.0, precision: 2) %></td>
+					<td><%= number_to_percentage(correlation(f, @fund_bmark_true[1], @new_fund_dates[0], @new_fund_dates[1])*100.0, precision: 2) %></td>
+					<% if f != @fund && !@fund.trackers.where(user_id: nil).pluck(:benchmark_id).include?(f.id) %>
+						<td>
+							<%= link_to 'X', @fund.trackers.find_by_benchmark_id_and_user_id(f.id, current_user.id), method: :delete %>
+						</td>
+					<% else %>
+						<td>X</td>
+					<% end %>
+				</tr>
+			<% end %>	
+		</table>
+	<% end %>
 
 	<div style="float:right; margin-bottom:0; margin-right: 5%" >
 		<%= form_tag trackers_path do %>

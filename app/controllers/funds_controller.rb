@@ -1,6 +1,7 @@
 class FundsController < ApplicationController
 before_filter :authorize_user
 before_filter :authorize_ga, except: [:show, :highwater_mark, :recent_returns]
+before_filter :is_investor, only: [:show]
 
 	def new
 		@fund = Fund.new
@@ -9,6 +10,8 @@ before_filter :authorize_ga, except: [:show, :highwater_mark, :recent_returns]
 	def create
 		@fund = Fund.new(params[:fund])
 		if @fund.save
+			@fund.trackers.builds(benchmark_id: 2, user_id: nil).save
+			@fund.trackers.builds(benchmark_id: 3, user_id: nil).save
 			flash[:success] = "New fund created"
 			redirect_to @fund
 		else
@@ -36,8 +39,8 @@ before_filter :authorize_ga, except: [:show, :highwater_mark, :recent_returns]
 
 		#get benchmarks with the user id 
 		@benchmark_ids_for_funds_array = @fund.trackers.where(user_id: current_user.id).pluck(:benchmark_id)
-		@fund_bmark_false = Fund.where(id: @benchmark_ids_for_funds_array, bmark: false) #could be indices or regular funds currently
-		@fund_bmark_true = Fund.where(id: @benchmark_ids_for_funds_array, bmark: true) #could be indices or regular funds currently
+		@fund_bmark_false = Fund.where(id: @benchmark_ids_for_funds_array, bmark: false).order("name")
+		@fund_bmark_true = Fund.where(id: @benchmark_ids_for_funds_array, bmark: true).order("name")
 
 		@funds_array = (@fund_bmark_false + @fund_bmark_true).unshift(@fund)
 		#####
@@ -234,5 +237,15 @@ before_filter :authorize_ga, except: [:show, :highwater_mark, :recent_returns]
 		end
 		
 		@removed_funds = @funds_array - @funds_with_date
+	end
+
+	private
+
+	def is_investor
+		@fund = Fund.find(params[:id])
+		if current_user.investor.relationships.find_by_fund_id(@fund.id).nil? && !current_user.global_admin?
+			flash[:notice] = "Welcome to the home page."
+			redirect_to root_path 
+		end
 	end
 end

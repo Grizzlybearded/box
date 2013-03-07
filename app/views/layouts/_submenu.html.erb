@@ -14,7 +14,7 @@
 			<% if current_user.investor.funds.where(fund_type: i).present? %>
 				<li><%= i %><li>
 			<% end %>
-			<% current_user.investor.funds.where(fund_type: i).each do |f| %>
+			<% current_user.investor.funds.where(fund_type: i).order("name").each do |f| %>
 				<li style="margin-left:10px">
 					<%= link_to_unless_current truncate(f.name, length: 20), f %>
 				</li>
