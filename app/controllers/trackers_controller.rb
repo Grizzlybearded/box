@@ -17,7 +17,7 @@ before_filter :authorize_user
 			Tracker.where(fund_id: @fund.id, benchmark_id: @benchmark_ids_array, user_id: current_user.id).last.destroy
 
 			if @fund.trackers.build(benchmark_id: @benchmark.id, user_id: current_user.id).save
-				flash[:success] = "New benchmark added!"
+				flash[:success] = "New benchmark added!  Removed old benchmark."
 				redirect_to @fund
 			else
 				flash[:notice] = "Benchmark not added.  Error occurred."
@@ -37,7 +37,7 @@ before_filter :authorize_user
 				Tracker.where(fund_id: @fund.id, benchmark_id: @benchmark_ids_array, user_id: current_user.id).last.destroy
 
 				if @fund.trackers.build(benchmark_id: @benchmark.id, user_id: current_user.id).save
-					flash[:success] = "New benchmark added!"
+					flash[:success] = "New benchmark added! Removed old benchmark."
 					redirect_to @fund
 				else
 					flash[:notice] = "Benchmark not added.  Error occurred."
