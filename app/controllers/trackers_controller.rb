@@ -59,7 +59,8 @@ before_filter :authorize_user
 		#locals that are specific for this page
 		id_to_array = [@tracker.benchmark_id]
 		@default_trackers = @parent_fund.trackers.where(user_id: nil).limit(2).pluck(:benchmark_id) #ids of default
-		@non_default_trackers = @parent_fund.trackers.where(user_id: !nil).pluck(:benchmark_id) #ids of benchmark
+		@non_default_trackers = @parent_fund.trackers.where(user_id: current_user.id).pluck(:benchmark_id) #ids of benchmark
+		
 
 		if @fund.bmark?
 			#both non default
