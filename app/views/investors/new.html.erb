@@ -2,8 +2,7 @@
 
 <fieldset>
 	<%= form_for @investor do |f| %>
-
-	<%= render 'shared/investor_form', f: f %>
-
+		<%= render 'shared/error_messages', object: f.object %>
+		<%= render 'shared/investor_form', f: f %>
 	<% end %>
 </fieldset>

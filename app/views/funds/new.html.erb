@@ -2,6 +2,8 @@
 
 <fieldset>
 	<%= form_for @fund do |f| %>
+		<%= render 'shared/error_messages', object: f.object %>
 		<%= render 'shared/fund_form', f: f %>
+		<%= f.submit "Submit fund", class: "btn btn-large btn-primary" %>
 	<% end %>
 </fieldset>

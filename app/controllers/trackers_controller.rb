@@ -1,5 +1,7 @@
 class TrackersController < ApplicationController
 before_filter :authorize_user
+before_filter :is_investor, only: [:create]
+before_filter :is_current_benchmark, only: [:destroy]
 
 	def create
 		@fund = Fund.find_by_id(params[:fund_id])
@@ -51,7 +53,6 @@ before_filter :authorize_user
 	end
 
 	def destroy
-
 		@tracker = Tracker.find(params[:id]) #this is the tracker record
 		@fund = Fund.find_by_id(@tracker.benchmark_id) #this is the benchmark == fund.  this is done to check whether the fund is an admin
 		@parent_fund = Fund.find_by_id(@tracker.fund_id) #this is so the parent_fund can build 
@@ -94,4 +95,15 @@ before_filter :authorize_user
 			redirect_to :back
 		end
 	end
+
+	private
+		def is_investor
+			@fund = Fund.find_by_name(params[:benchmark_name])
+			redirect_to root_path unless current_user.investor.funds.include?(@fund) || @fund.bmark? || current_user.global_admin?
+		end
+
+		def is_current_benchmark
+			@tracker = Tracker.find(params[:id])
+			redirect_to root_path unless @tracker.user_id == current_user.id || current_user.global_admin?
+		end
 end

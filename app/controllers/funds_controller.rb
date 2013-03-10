@@ -1,7 +1,6 @@
 class FundsController < ApplicationController
 before_filter :authorize_user
-before_filter :authorize_ga, except: [:show, :highwater_mark, :recent_returns]
-#before_filter :is_investor, only: [:show]
+before_filter :correct_investor, except: [:recent_returns, :highwater_mark, :index, :new, :create]
 
 	def new
 		@fund = Fund.new
@@ -10,8 +9,10 @@ before_filter :authorize_ga, except: [:show, :highwater_mark, :recent_returns]
 	def create
 		@fund = Fund.new(params[:fund])
 		if @fund.save
-			@fund.trackers.builds(benchmark_id: 2, user_id: nil).save
-			@fund.trackers.builds(benchmark_id: 3, user_id: nil).save
+			@fund_benchmarks = Fund.get_initial_benchmarks(@fund)
+			@fund.trackers.build(benchmark_id: @fund_benchmarks[0], user_id: nil).save
+			@fund.trackers.build(benchmark_id: @fund_benchmarks[1], user_id: nil).save
+			current_user.investor.relationships.build(fund_id: @fund.id).save
 			flash[:success] = "New fund created"
 			redirect_to @fund
 		else
@@ -20,17 +21,17 @@ before_filter :authorize_ga, except: [:show, :highwater_mark, :recent_returns]
 	end
 
 	def index
-		@funds = Fund.all
+		@funds = current_user.investor.funds.where(bmark: false).order("fund_type")
+		@indices = current_user.investor.funds.where(bmark: true)
 	end
 
 	def show
 		@fund = Fund.find(params[:id])
 		@month = @fund.months.build
-
 		@fund_dates = start_end_dates(@fund)
 
 		#create benchmarks with user_id if not already done
-		if !@fund.trackers.where(user_id: current_user.id).present?		
+		if !@fund.trackers.where(user_id: current_user.id).present?
 			@benchmark_ids = @fund.benchmarks.pluck(:benchmark_id)
 			@benchmark_ids.each do |b|
 				Tracker.new(fund_id: @fund.id, benchmark_id: b, user_id: current_user.id).save
@@ -195,6 +196,8 @@ before_filter :authorize_ga, except: [:show, :highwater_mark, :recent_returns]
 
 	def edit
 		@fund = Fund.find(params[:id])
+		@trackers = Tracker.where(fund_id: @fund.id, user_id: nil)
+		@benchmarks_for_select = Fund.where(bmark:true)
 	end
 
 	def update
@@ -213,7 +216,7 @@ before_filter :authorize_ga, except: [:show, :highwater_mark, :recent_returns]
 
 	def destroy
 		Fund.find(params[:id]).destroy
-		flash[:success] = "Fund destroyed"
+		flash[:success] = "Fund deleted"
 		redirect_to funds_path
 	end
 
@@ -247,5 +250,12 @@ before_filter :authorize_ga, except: [:show, :highwater_mark, :recent_returns]
 			flash[:notice] = "Welcome to the home page."
 			redirect_to root_path 
 		end
+	end
+
+	private
+
+	def correct_investor
+		@fund = Fund.find(params[:id])
+		redirect_to root_path unless current_user.investor.funds.include?(@fund) || current_user.global_admin?
 	end
 end

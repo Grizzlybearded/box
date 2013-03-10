@@ -11,10 +11,10 @@
 	<% end %>
 		<li>My Funds</li>
 		<% Fund::VALID_FUND_TYPES.each do |i| %>
-			<% if current_user.investor.funds.where(fund_type: i).present? %>
+			<% if current_user.investor.funds.where(fund_type: i, bmark: false).present? %>
 				<li><%= i %><li>
 			<% end %>
-			<% current_user.investor.funds.where(fund_type: i).order("name").each do |f| %>
+			<% current_user.investor.funds.where(fund_type: i, bmark: false).order("name").each do |f| %>
 				<li style="margin-left:10px">
 					<%= link_to_unless_current truncate(f.name, length: 20), f %>
 				</li>

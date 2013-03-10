@@ -1,25 +1,27 @@
 <h1><%= @investor.name %></h1>
 
 
-	<table>
-		<tr>
-			<th>Name</th>
-			<th>Email</th>
-		</tr>
-		<% @investor.users.each do |f| %>
-			<% if f.name.present? %>
-				<tr>
-					<td><%= f.name %></td>
-					<td><%= f.email %></td>
-				</tr>
-			<% end %>
-		<% end %>		
-	</table>
-<fieldset>
-	<%= form_for @user do |f| %>
+<table style="width:50%; margin-bottom:30px">
+	<tr>
+		<th>Name</th>
+		<th>Email</th>
+		<th>Remove User</th>
+	</tr>
+	<% @investor.users.each do |f| %>
+		<% if f.name.present? %>
+			<tr>
+				<td style="text-align:left"><%= f.name %></td>
+				<td><%= f.email %></td>
+				<% if f != current_user %>
+					<td><%= link_to 'Remove', f, method: :delete, data: {confirm: "Did this person leave your company?"} %></td>
+				<% else %>
+					<td></td>
+				<% end %>
+			</tr>
+		<% end %>
+	<% end %>		
+</table>
 
-	<%= hidden_field_tag 'user[investor_id]', @investor.id %>
-	<%= render 'shared/user_form', f: f %>
-
-	<% end %>
-</fieldset>
+<div style="float:right; margin-right:25%">
+	<%= link_to "Create new user", new_user_path, class: "btn btn-large btn-primary" %>
+</div>

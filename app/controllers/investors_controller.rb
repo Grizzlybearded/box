@@ -1,6 +1,9 @@
 class InvestorsController < ApplicationController
   before_filter :authorize_user
-  before_filter :authorize_ga
+  before_filter :authorize_ga, except: [:show]
+  before_filter :correct_user, only: [:show]
+  #the authorize_ga and correct_user before_filters work together to create the desired restrictions
+
   def new
   	@investor = Investor.new
   end
@@ -8,6 +11,11 @@ class InvestorsController < ApplicationController
   def create
   	@investor = Investor.new(params[:investor])
   	if @investor.save
+
+      #
+      #Subscribe to all the indices automatically.  Add functionality here.
+      #
+
   		flash[:success] = "New investor created!"
   		redirect_to investors_path
   	else
@@ -43,4 +51,11 @@ class InvestorsController < ApplicationController
   	flash[:success] = "Investor destroyed"
   	redirect_to investors_path
   end
+
+  private
+
+    def correct_user
+      @investor = Investor.find(params[:id])
+      redirect_to root_path unless current_user.investor == @investor || current_user.global_admin?
+    end
 end

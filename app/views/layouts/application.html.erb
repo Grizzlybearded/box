@@ -14,9 +14,11 @@
                 <%= render 'layouts/submenu' %>
             </submenu>
             <section>
-            <% flash.each do |key, value| %>
-                <%= content_tag(:div, value, class: "alert alert-#{key}") %>
-            <% end %>
+                <div style="width:90%; margin: 0 auto">
+                    <% flash.each do |key, value| %>
+                        <%= content_tag(:div, value, class: "alert alert-#{key}") %>
+                    <% end %>
+                </div>
             <%= yield %>
             <%= debug(params) if Rails.env.development? %>
             </section>

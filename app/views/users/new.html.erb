@@ -1,1 +1,10 @@
-new.html.erb
+<h1>Create a new User</h1>
+
+<fieldset>
+	<%= form_for @user do |f| %>
+		<%= render 'shared/error_messages', object: f.object %>
+		<%= hidden_field_tag 'user[investor_id]', current_user.investor_id %>
+		<%= render 'shared/user_form', f: f %>
+		<%= f.submit "Create user", class: "btn btn-large btn-primary" %>
+	<% end %>
+</fieldset>

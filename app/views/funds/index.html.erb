@@ -1,24 +1,43 @@
-<h1> Fund Index - <%= Date.today.strftime("%b %d, %Y") %></h1>
+<h1> Fund Management</h1>
 
-<div class="row">
-	<div class="span6 offset3">
-		<% @funds.each do |f| %>
-			<li>
-				<%= link_to f.name, f %>
-				| <%= f.bmark %>
-				| <%= link_to 'Edit', edit_fund_path(f) %>
-				| <%= link_to 'Destroy', f, method: :delete, data: {confirm: "You sure?"} %>
-			</li>
+<div>
+	<% Fund::VALID_FUND_TYPES.each do |i| %>
+		<% if current_user.investor.funds.where(fund_type: i, bmark:false).present? %>	
+			<h2><%= i %></h2>
+			<table style="width:50%; margin-bottom:30px">
+				<% current_user.investor.funds.where(fund_type: i, bmark: false).order("name").each do |f| %>
+					<tr>
+						<td style="width:250px; text-align:left"><%= link_to f.name, f %></td>
+						<td><%= link_to 'Edit', edit_fund_path(f) %></td>
+						<td><%= link_to 'Delete', f, method: :delete, data: {confirm: "You sure?"} %></td>
+					</tr>
+				<% end %>
+			</table>
 		<% end %>
-	</div>
-</div>
+	<% end %>
 
-<p></p>
-<div class="row">
-	<div class="span6 offset3">
+	<div style="float:right; margin-right:25%">
 		<%= link_to "Create new fund", new_fund_path, class: "btn btn-large btn-primary" %>
 	</div>
-</div>
+</div><br/>
+<br/>
+
+
+<h2>Indices</h2>
+<table style="width:50%">
+	<tr>
+		<th>Index</th>
+		<th>Type</th>
+	</tr>
+	<% @indices.each do |i| %>
+		<tr>
+			<td style="text-align:left"><%= link_to i.name, i %></td>
+			<td><%= i.fund_type%></td>
+		</tr>
+	<% end %>
+</table>
+
+
 
 <% if current_user.global_admin? %>
 	<h2>Import Data</h2>
