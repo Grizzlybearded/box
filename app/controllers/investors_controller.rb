@@ -14,7 +14,7 @@ class InvestorsController < ApplicationController
       
       #subscribe to all the core benchmarks
       Fund.where(core_bmark: true).each do |f|
-        @investor.relationships.build(f.id).save
+        f.relationships.build(investor_id: @investor.id).save
       end
 
   		flash[:success] = "New investor created!"
