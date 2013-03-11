@@ -1,12 +1,20 @@
 class FundsController < ApplicationController
 before_filter :authorize_user
 before_filter :correct_investor, except: [:recent_returns, :highwater_mark, :index, :new, :create]
+before_filter :is_core_bmark, only: [:edit, :update, :destroy]
 
 	def new
 		@fund = Fund.new
 	end
 
 	def create
+		
+		#
+		#
+		#core_bmark is not included in the fund's params. look into this.
+		#
+		#
+
 		@fund = Fund.new(params[:fund])
 		if @fund.save
 			@fund_benchmarks = Fund.get_initial_benchmarks(@fund)
@@ -22,7 +30,7 @@ before_filter :correct_investor, except: [:recent_returns, :highwater_mark, :ind
 
 	def index
 		@funds = current_user.investor.funds.where(bmark: false).order("fund_type")
-		@indices = current_user.investor.funds.where(bmark: true)
+		@indices = current_user.investor.funds.where(bmark: true).order("name")
 	end
 
 	def show
@@ -67,9 +75,7 @@ before_filter :correct_investor, except: [:recent_returns, :highwater_mark, :ind
 
 
 			#THIS WILL NEED TO BE CHANGED WHEN THE INVESTOR SETTINGS ARE CHANGED
-			@arr_for_benchmark_autocomplete = @current_user.investor.funds.pluck(:name) + 
-				Fund.where(bmark: true).pluck(:name) - 
-				@funds_array.map{|f| f.name}
+			@arr_for_benchmark_autocomplete = @current_user.investor.funds.pluck(:name) - @funds_array.map{|f| f.name}
 
 			#FIX THE CHART SO IT CAN HAVE VARIABLE INPUTS
 			@ykeys_for_chart = []
@@ -202,31 +208,55 @@ before_filter :correct_investor, except: [:recent_returns, :highwater_mark, :ind
 
 	def update
 		@fund = Fund.find(params[:id])
-		if @fund.update_attributes(params[:fund])
-			flash[:success] = "Fund updated"
-			redirect_to funds_path
+		if @fund.core_bmark == false
+			if @fund.update_attributes(params[:fund])
+				flash[:success] = "Fund updated"
+				redirect_to funds_path
+			else
+				render 'edit'
+			end
+		elsif @fund.core_bmark? && current_user.global_admin?
+			if @fund.update_attributes(params[:fund])
+				flash[:success] = "Fund updated"
+				redirect_to funds_path
+			else
+				render 'edit'
+			end
 		else
-			render 'edit'
+			flash[:notice] = "This benchmark cannot be edited"
+			redirect_to funds_path
 		end
 	end
 
-	def show_for_admin
+	def months_edit_for
 		@fund = Fund.find(params[:id])
+		@months = @fund.months
+		@month = @fund.months.build
 	end
 
 	def destroy
-		Fund.find(params[:id]).destroy
-		flash[:success] = "Fund deleted"
-		redirect_to funds_path
+		@fund = Fund.find(params[:id])
+		if @fund.core_bmark == false
+			@fund.destroy
+			flash[:success] = "Fund deleted"
+			redirect_to funds_path
+		elsif @fund.core_bmark? && current_user.global_admin?
+			@fund.destroy
+			flash[:success] = "Fund deleted"
+			redirect_to funds_path
+		else
+			flash[:notice] = "This benchmark cannot be deleted"
+			redirect_to funds_path
+		end
 	end
 
 	def highwater_mark
-		@funds_array = current_user.investor.funds
+		@funds_array = current_user.investor.funds.where(bmark: false).order("name")
 	end
 
 	def recent_returns
 		@recent_date = Month.maximum(:mend)
-		@funds_array = current_user.investor.funds
+		@funds_array = current_user.investor.funds.where(bmark: false).order("name")
 
 		@fund_ids = @funds_array.map{|n| n.id}
 
@@ -258,4 +288,16 @@ before_filter :correct_investor, except: [:recent_returns, :highwater_mark, :ind
 		@fund = Fund.find(params[:id])
 		redirect_to root_path unless current_user.investor.funds.include?(@fund) || current_user.global_admin?
 	end
+
+	def is_core_bmark
+		@fund = Fund.find(params[:id])
+		redirect_to root_path unless @fund.core_bmark == false || current_user.global_admin?
+	end
+
+
+
+	#DONE restrict edit/destroy of funds with core_bmark == true to global admin in controller and view
+	#DONE create relationships for each core_bmark when investor is created.
+	#for trackers, only allow indices that you are subscribed to be in the comparison array. user.investor.funds.where(bmark: true)
+
 end

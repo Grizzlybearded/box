@@ -14,7 +14,7 @@
               </a>
               <ul class="dropdown-menu">
                 <li><%= link_to "Profile", edit_user_path(current_user) %></li>
-                <li><%= link_to "Manage Funds", funds_path %></li>
+                <li><%= link_to "Funds", funds_path %></li>
                 <li><%= link_to current_user.investor.name, current_user.investor %></li>
                 <li class="divider"></li>
                 <li><%= link_to "Log out", session_path("current"), method: "delete" %></li>

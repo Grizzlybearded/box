@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130304001314) do
+ActiveRecord::Schema.define(:version => 20130311000213) do
 
   create_table "funds", :force => true do |t|
     t.string   "name"
@@ -19,6 +19,7 @@ ActiveRecord::Schema.define(:version => 20130304001314) do
     t.datetime "updated_at",                    :null => false
     t.string   "fund_type"
     t.boolean  "bmark",      :default => false
+    t.boolean  "core_bmark", :default => false
   end
 
   create_table "investors", :force => true do |t|
@@ -30,12 +31,9 @@ ActiveRecord::Schema.define(:version => 20130304001314) do
   create_table "months", :force => true do |t|
     t.date     "mend"
     t.integer  "fund_id"
-    t.decimal  "gross",       :precision => 7, :scale => 4
-    t.decimal  "net",         :precision => 7, :scale => 4
     t.decimal  "fund_return", :precision => 6, :scale => 4
     t.datetime "created_at",                                :null => false
     t.datetime "updated_at",                                :null => false
-    t.integer  "aum"
   end
 
   create_table "relationships", :force => true do |t|

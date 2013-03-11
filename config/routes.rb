@@ -7,7 +7,7 @@ Box::Application.routes.draw do
   resources :users, only: [:new, :create, :destroy, :edit, :update, :index]
   resources :funds do
     member do
-      get :show_for_admin
+      get :months_edit_for
     end
   end
 

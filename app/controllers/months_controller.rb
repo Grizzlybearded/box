@@ -1,13 +1,19 @@
 class MonthsController < ApplicationController
-before_filter :authorize_user, except: [:current_month]
-before_filter :authorize_ga, except: [:current_month, :current_month_rates]
+before_filter :authorize_user
+before_filter :correct_investor, except: [:create, :import]
 
 	def create
 		@month = Month.new(params[:month])
-		if @month.save
-			flash[:success] = "New month added"
-			redirect_to @month.fund
+		if current_user.investor.funds.where(bmark: false).pluck(:fund_id).include?(@month.fund_id)
+			if @month.save
+				flash[:success] = "New month added"
+				redirect_to months_edit_for_fund_path(@month.fund)
+			else
+				flash[:notice] = "Return not added"
+				redirect_to :back
+			end
 		else
+			flash[:notice] = "You may only add data to funds for which you are an investor"
 			redirect_to :back
 		end
 	end
@@ -20,7 +26,7 @@ before_filter :authorize_ga, except: [:current_month, :current_month_rates]
 		@month = Month.find(params[:id])
 		if @month.update_attributes(params[:month])
 			flash[:success] = "Month updated"
-			redirect_to @month.fund
+			redirect_to months_edit_for_fund_path(@month.fund)
 		else
 			render 'edit'
 		end
@@ -37,4 +43,9 @@ before_filter :authorize_ga, except: [:current_month, :current_month_rates]
 		redirect_to root_url, notice: "Fund data imported"
 	end
 
+	private
+		def correct_investor
+			@fund_id = Month.find(params[:id]).fund_id
+			redirect_to root_path unless current_user.investor.funds.where(bmark: false).pluck(:fund_id).include?(@fund_id) || current_user.global_admin?
+		end
 end

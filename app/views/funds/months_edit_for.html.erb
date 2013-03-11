@@ -1,0 +1,42 @@
+<h1><%= @fund.name %> - Returns</h1>
+
+<table style="width:50%">
+	<tr>
+		<th>Month</th>
+		<th>Return</th>
+		<th>Edit</th>
+		<th>Delete</th>
+	</tr>
+	<% @months.each do |f| %>
+			<tr>
+				<% if f.mend.present? %>
+					<td><%= f.mend.strftime("%b-%y") %></td>
+					<td><%= number_to_percentage(f.fund_return, precision: 2) %></td>
+					<td><%= link_to 'Edit', edit_month_path(f) %></td>
+					<td><%= link_to 'Delete', f, method: :delete, data: {confirm: "Are you sure?"}  %></td>
+				<% else %>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				<% end %>
+			</tr>
+	<% end %>
+</table>
+
+<h2 style="margin-top: 30px">Add a return</h2>
+
+<%= form_for(@month) do |builder| %>
+	<%= render 'shared/error_messages' , object: builder.object %>
+	<%= hidden_field_tag 'month[fund_id]', @fund.id %>
+	<%= render 'shared/month_form', f: builder %>
+<% end %>
+
+<h2>Import Returns</h2>
+
+<fieldset>
+	<%= form_tag import_months_path, multipart: true do %>
+		<%= file_field_tag :file %>
+		<%= submit_tag "Import" %>
+	<% end %>
+</fieldset>

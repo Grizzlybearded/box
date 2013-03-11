@@ -11,10 +11,11 @@ class InvestorsController < ApplicationController
   def create
   	@investor = Investor.new(params[:investor])
   	if @investor.save
-
-      #
-      #Subscribe to all the indices automatically.  Add functionality here.
-      #
+      
+      #subscribe to all the core benchmarks
+      Fund.where(core_bmark: true).each do |f|
+        @investor.relationships.build(f.id).save
+      end
 
   		flash[:success] = "New investor created!"
   		redirect_to investors_path

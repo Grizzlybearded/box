@@ -12,7 +12,7 @@ before_filter :is_current_benchmark, only: [:destroy]
 
 		#check whether index
 		#if index, push destroy tracker with with index and user_id == current_user.id
-		#else, if benchmarks < 4, create regularly, else, destroy the one created_at firstand then create
+		#else, if benchmarks < 4, create regularly, else, destroy the one created_at first and then create
 		if @benchmark.present? && @benchmark.bmark?
 			#destroy the last one
 			@benchmark_ids_array = @fund.benchmarks.where(bmark: true).pluck(:benchmark_id)
@@ -99,7 +99,12 @@ before_filter :is_current_benchmark, only: [:destroy]
 	private
 		def is_investor
 			@fund = Fund.find_by_name(params[:benchmark_name])
-			redirect_to root_path unless current_user.investor.funds.include?(@fund) || @fund.bmark? || current_user.global_admin?
+			if @fund.present?
+				redirect_to root_path unless current_user.investor.funds.include?(@fund) || @fund.bmark? || current_user.global_admin?
+			else
+				flash[:notice] = "That fund doesn't exist"
+				redirect_to :back
+			end
 		end
 
 		def is_current_benchmark
