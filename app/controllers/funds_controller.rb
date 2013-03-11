@@ -203,7 +203,7 @@ before_filter :is_core_bmark, only: [:edit, :update, :destroy]
 	def edit
 		@fund = Fund.find(params[:id])
 		@trackers = Tracker.where(fund_id: @fund.id, user_id: nil)
-		@benchmarks_for_select = Fund.where(bmark:true)
+		@benchmarks_for_select = current_user.investor.funds.where(bmark:true)
 	end
 
 	def update
@@ -293,8 +293,6 @@ before_filter :is_core_bmark, only: [:edit, :update, :destroy]
 		@fund = Fund.find(params[:id])
 		redirect_to root_path unless @fund.core_bmark == false || current_user.global_admin?
 	end
-
-
 
 	#DONE restrict edit/destroy of funds with core_bmark == true to global admin in controller and view
 	#DONE create relationships for each core_bmark when investor is created.

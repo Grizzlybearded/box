@@ -46,6 +46,6 @@ before_filter :correct_investor, except: [:create, :import]
 	private
 		def correct_investor
 			@fund_id = Month.find(params[:id]).fund_id
-			redirect_to root_path unless current_user.investor.funds.where(bmark: false).pluck(:fund_id).include?(@fund_id) || current_user.global_admin?
+			redirect_to root_path unless current_user.investor.funds.where(core_bmark: false).pluck(:fund_id).include?(@fund_id) || current_user.global_admin?
 		end
 end
