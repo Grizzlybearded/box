@@ -1,5 +1,6 @@
 class MonthsController < ApplicationController
 before_filter :authorize_user
+before_filter :authorize_ga, only: [:import]
 before_filter :correct_investor, except: [:create, :import]
 
 	def create
