@@ -1,10 +1,3 @@
-
-<div>
-	<% if current_user.global_admin? %>
-		<%= link_to 'Admin Show', show_for_admin_fund_path(@fund) %>
-	<% end %>	
-</div>
-
 <fieldset>
 	<% if current_user.global_admin? %>
 		<div>
@@ -46,16 +39,3 @@
 	<% end %>
 </div>
 </fieldset>
-
-
-
-<% if current_user.global_admin? %>
-	<%= form_for(@month) do |builder| %>
-		<%= render 'shared/error_messages' , object: builder.object %>
-
-		<%= hidden_field_tag 'month[fund_id]', @fund.id %>
-
-		<%= render 'shared/month_form', f: builder %>
-		
-	<% end %>
-<% end %>
