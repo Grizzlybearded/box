@@ -37,6 +37,7 @@
 <fieldset>
 	<%= form_tag import_months_path, multipart: true do %>
 		<%= file_field_tag :file %>
+		<%= hidden_field_tag :fund_id, @fund.id %>
 		<%= submit_tag "Import" %>
 	<% end %>
 </fieldset>

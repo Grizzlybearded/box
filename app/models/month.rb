@@ -9,14 +9,12 @@ class Month < ActiveRecord::Base
 
   belongs_to :fund
 
-  def self.import(file)
+  def self.import(file, fund_id)
   	CSV.foreach(file.path, headers: true) do |row|
-    	#if current_user.investor.funds.where(bmark: false).pluck(:id).include?(row["fund id"])
-        month = Month.find_by_mend_and_fund_id(Date.strptime(row["mend"],'%b-%y'), row["fund id"]) || 
-    			Month.new(mend: Date.strptime(row["mend"],'%b-%y'), fund_id: row["fund id"])
-    		month.assign_attributes({fund_return: row["return"]})
-    		month.save!
-      #end
+      month = Month.find_by_mend_and_fund_id(Date.strptime(row["mend"],'%b-%y'), fund_id) || 
+  			Month.new(mend: Date.strptime(row["mend"],'%b-%y'), fund_id: fund_id)
+  		month.assign_attributes({fund_return: row["return"]})
+  		month.save!
   	end
   end
 end

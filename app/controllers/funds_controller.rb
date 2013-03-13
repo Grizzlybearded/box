@@ -1,6 +1,7 @@
 class FundsController < ApplicationController
 before_filter :authorize_user
-before_filter :correct_investor, except: [:recent_returns, :highwater_mark, :index, :new, :create]
+before_filter :correct_investor, except: [:show, :recent_returns, :highwater_mark, :index, :new, :create]
+before_filter :correct_investor_for_show, only: [:show]
 before_filter :is_core_bmark, only: [:edit, :update, :destroy]
 
 	def new
@@ -273,29 +274,22 @@ before_filter :is_core_bmark, only: [:edit, :update, :destroy]
 	end
 
 	private
-
-	def is_investor
-		@fund = Fund.find(params[:id])
-		if current_user.investor.relationships.find_by_fund_id(@fund.id).nil? && !current_user.global_admin?
-			flash[:notice] = "Welcome to the home page."
-			redirect_to root_path 
+		def correct_investor_for_show
+			@fund = Fund.find(params[:id])
+			redirect_to root_path unless current_user.investor.funds.include?(@fund) || current_user.global_admin?			
 		end
-	end
 
-	private
+		def correct_investor
+			@fund = Fund.find(params[:id])
+			redirect_to root_path unless current_user.investor.funds.where(core_bmark: false).include?(@fund) || current_user.global_admin?
+		end
 
-	def correct_investor
-		@fund = Fund.find(params[:id])
-		redirect_to root_path unless current_user.investor.funds.include?(@fund) || current_user.global_admin?
-	end
-
-	def is_core_bmark
-		@fund = Fund.find(params[:id])
-		redirect_to root_path unless @fund.core_bmark == false || current_user.global_admin?
-	end
+		def is_core_bmark
+			@fund = Fund.find(params[:id])
+			redirect_to root_path unless @fund.core_bmark == false || current_user.global_admin?
+		end
 
 	#DONE restrict edit/destroy of funds with core_bmark == true to global admin in controller and view
 	#DONE create relationships for each core_bmark when investor is created.
 	#for trackers, only allow indices that you are subscribed to be in the comparison array. user.investor.funds.where(bmark: true)
-
 end
