@@ -16,7 +16,7 @@
 		</caption>
 		<tr>
 			<th>Fund</th>
-			<th><%= @recent_date.year %> YTD</th>
+			<th>YTD through <%= @recent_date.strftime("%b-%y") %></th>
 			<th>Last 12 Months</th>
 		</tr>
 		<% @funds_with_date.each do |f| %>

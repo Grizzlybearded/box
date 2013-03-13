@@ -41,7 +41,7 @@ before_filter :correct_investor, except: [:create, :import]
 
 	#make is so that the user can't import unless he is an owner of the fund.
 	def import
-		@fund = Fund.find(params[:id])
+		@fund = Fund.find_by_id(params[:fund_id])
 		if current_user.investor.funds.where(core_bmark: false).include?(@fund)
 			Month.import(params[:file], @fund.id)
 			redirect_to root_url, notice: "Fund data imported"
