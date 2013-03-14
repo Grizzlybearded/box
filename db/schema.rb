@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130311000213) do
+ActiveRecord::Schema.define(:version => 20130314035237) do
 
   create_table "funds", :force => true do |t|
     t.string   "name"
@@ -21,6 +21,8 @@ ActiveRecord::Schema.define(:version => 20130311000213) do
     t.boolean  "bmark",      :default => false
     t.boolean  "core_bmark", :default => false
   end
+
+  add_index "funds", ["name"], :name => "index_funds_on_name", :unique => true
 
   create_table "investors", :force => true do |t|
     t.string   "name"
@@ -62,5 +64,7 @@ ActiveRecord::Schema.define(:version => 20130311000213) do
     t.boolean  "global_admin",    :default => false
     t.integer  "investor_id"
   end
+
+  add_index "users", ["email"], :name => "index_users_on_email", :unique => true
 
 end

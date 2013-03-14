@@ -23,7 +23,7 @@ before_filter :is_core_bmark, only: [:edit, :update, :destroy]
 			@fund.trackers.build(benchmark_id: @fund_benchmarks[1], user_id: nil).save
 			current_user.investor.relationships.build(fund_id: @fund.id).save
 			flash[:success] = "New fund created"
-			redirect_to @fund
+			redirect_to months_edit_for_fund_path(@fund)
 		else
 			render 'new'
 		end

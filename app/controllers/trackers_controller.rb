@@ -100,6 +100,7 @@ before_filter :is_current_benchmark, only: [:destroy]
 		def is_investor
 			@fund = Fund.find_by_name(params[:benchmark_name])
 			if @fund.present?
+				flash[:notice] = "You are not subscribed to that fund"
 				redirect_to root_path unless current_user.investor.funds.include?(@fund) || @fund.bmark? || current_user.global_admin?
 			else
 				flash[:notice] = "That fund doesn't exist"

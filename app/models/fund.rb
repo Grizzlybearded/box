@@ -7,6 +7,8 @@ class Fund < ActiveRecord::Base
     'Event Driven', 'Global Macro', 'Managed Futures', 
     'Multi-Strategy',]
 
+  validates :name, uniqueness: true
+
   validates :fund_type,
   	inclusion: { :in => VALID_FUND_TYPES,
   	message: "%{value} is not a valid fund type" },
@@ -27,6 +29,7 @@ class Fund < ActiveRecord::Base
 
   accepts_nested_attributes_for :months, allow_destroy: true
   accepts_nested_attributes_for :trackers, allow_destroy: true
+  
   def self.get_initial_benchmarks(fund)
     @benchmarks = []
     if fund.fund_type == 'Emerging Markets'
