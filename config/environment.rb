@@ -4,14 +4,6 @@ require File.expand_path('../application', __FILE__)
 # Initialize the rails application
 Box::Application.initialize!
 
-Box::Application.configure do 
-	# Disable delivery errors, bad email addresses will be ignored
-	config.action_mailer.raise_delivery_errors = true
-
-	# Change mail delivery to either :smtp, :sendmail, :file, :test
-	config.action_mailer.delivery_method = :smtp
-end
-
 ActionMailer::Base.smtp_settings = {
 	:user_name => "app11629203@heroku.com",
 	:password => "goldenshoe14",

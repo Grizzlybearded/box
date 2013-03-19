@@ -51,6 +51,12 @@ Box::Application.configure do
   # added to create ensure host
   config.action_mailer.default_url_options = { :host => "nameless-tundra-6004.herokuapp.com" }
 
+  # Disable delivery errors, bad email addresses will be ignored
+  config.action_mailer.raise_delivery_errors = true
+
+  # Change mail delivery to either :smtp, :sendmail, :file, :test
+  config.action_mailer.delivery_method = :smtp
+
   # Specify what domain to use for mailer URLs
   #config.action_mailer.default_url_options = {host: "https://nameless-tundra-6004.herokuapp.com"}
 
