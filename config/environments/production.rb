@@ -48,11 +48,13 @@ Box::Application.configure do
   # Precompile additional assets (application.js, application.css, and all non-JS/CSS are already added)
   # config.assets.precompile += %w( search.js )
 
-  # Disable delivery errors, bad email addresses will be ignored
-  config.action_mailer.raise_delivery_errors = true
+  Box::Application.configure do 
+    # Disable delivery errors, bad email addresses will be ignored
+    config.action_mailer.raise_delivery_errors = true
 
-  # Change mail delivery to either :smtp, :sendmail, :file, :test
-  config.action_mailer.delivery_method = :smtp
+    # Change mail delivery to either :smtp, :sendmail, :file, :test
+    config.action_mailer.delivery_method = :smtp
+  end
 
   ActionMailer::Base.smtp_settings = {
     :user_name => "app11629203@heroku.com",
