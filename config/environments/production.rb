@@ -52,7 +52,7 @@ Box::Application.configure do
   config.action_mailer.raise_delivery_errors = true
 
   # Change mail delivery to either :smtp, :sendmail, :file, :test
-  # config.action_mailer.delivery_method = :sendmail
+  config.action_mailer.delivery_method = :smtp
 
   config.action_mailer.smtp_settings = {
     :user_name => "app11629203@heroku.com",
