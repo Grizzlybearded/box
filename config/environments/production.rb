@@ -54,8 +54,18 @@ Box::Application.configure do
   # Change mail delivery to either :smtp, :sendmail, :file, :test
   # config.action_mailer.delivery_method = :sendmail
 
+  config.action_mailer.smtp_settings = {
+    :user_name => "app11629203@heroku.com",
+    :password => "goldenshoe14",
+    :domain => "https://nameless-tundra-6004.herokuapp.com",
+    :address => "smtp.sendgrid.net",
+    :port => 465,
+    :authentication => :plain,
+    :enable_starttls_auto => true
+  }
+
   # Specify what domain to use for mailer URLs
-  config.action_mailer.default_url_options = {host: "https://nameless-tundra-6004.herokuapp.com"}
+  #config.action_mailer.default_url_options = {host: "https://nameless-tundra-6004.herokuapp.com"}
 
   # Enable threaded mode
   # config.threadsafe!
