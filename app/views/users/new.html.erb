@@ -1,9 +1,11 @@
-<h1>Create a new User</h1>
+<h1>Signup</h1>
 
 <fieldset>
 	<%= form_for @user do |f| %>
 		<%= render 'shared/error_messages', object: f.object %>
-		<%= hidden_field_tag 'user[investor_id]', current_user.investor_id %>
+
+		<%= f.hidden_field :invitation_token %>
+		<%= f.hidden_field :investor_id, value: @investor.id %>
 		<%= render 'shared/user_form', f: f %>
 		<%= f.submit "Create user", class: "btn btn-large btn-primary" %>
 	<% end %>

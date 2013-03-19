@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130314035237) do
+ActiveRecord::Schema.define(:version => 20130317214902) do
 
   create_table "funds", :force => true do |t|
     t.string   "name"
@@ -28,6 +28,15 @@ ActiveRecord::Schema.define(:version => 20130314035237) do
     t.string   "name"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
+  end
+
+  create_table "invitations", :force => true do |t|
+    t.integer  "sender_id"
+    t.string   "recipient_email"
+    t.string   "token"
+    t.datetime "sent_at"
+    t.datetime "created_at",      :null => false
+    t.datetime "updated_at",      :null => false
   end
 
   create_table "months", :force => true do |t|
@@ -63,6 +72,7 @@ ActiveRecord::Schema.define(:version => 20130314035237) do
     t.string   "name"
     t.boolean  "global_admin",    :default => false
     t.integer  "investor_id"
+    t.integer  "invitation_id"
   end
 
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true

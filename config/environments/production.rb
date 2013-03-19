@@ -49,7 +49,13 @@ Box::Application.configure do
   # config.assets.precompile += %w( search.js )
 
   # Disable delivery errors, bad email addresses will be ignored
-  # config.action_mailer.raise_delivery_errors = false
+  config.action_mailer.raise_delivery_errors = true
+
+ # Change mail delivery to either :smtp, :sendmail, :file, :test
+  config.action_mailer.delivery_method = :sendmail
+
+  # Specify what domain to use for mailer URLs
+  config.action_mailer.default_url_options = {host: "https://nameless-tundra-6004.herokuapp.com"}
 
   # Enable threaded mode
   # config.threadsafe!

@@ -1,0 +1,10 @@
+<h1>Add someone from your firm</h1>
+
+<%= form_for @invitation do |f| %>
+	<fieldset>
+		<%= render 'shared/error_messages', object: f.object %>
+		<%= f.label :recipient_email, "Your colleague's email" %>
+		<%= f.text_field :recipient_email %>
+		<%= f.submit "Send", class: "btn btn-large btn-primary" %>
+	</fieldset>
+<% end %>	

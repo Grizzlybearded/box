@@ -9,7 +9,7 @@ before_filter :is_core_bmark, only: [:edit, :update, :destroy]
 	end
 
 	def create
-		
+
 		#
 		#
 		#core_bmark is not included in the fund's params. look into this.

@@ -44,6 +44,7 @@ before_filter :correct_investor, except: [:create, :import]
 		@fund = Fund.find_by_id(params[:fund_id])
 		if current_user.investor.funds.where(core_bmark: false).include?(@fund)
 			Month.import(params[:file], @fund.id)
+			UserMailer.fund_data_imported(current_user, @fund).deliver
 			redirect_to root_url, notice: "Fund data imported"
 		else
 			flash[:notice] = "You may only import data for funds in which you are invested"
