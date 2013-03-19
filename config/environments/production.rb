@@ -48,6 +48,9 @@ Box::Application.configure do
   # Precompile additional assets (application.js, application.css, and all non-JS/CSS are already added)
   # config.assets.precompile += %w( search.js )
 
+  # added to create ensure host
+  config.action_mailer.default_url_options = { :host => "nameless-tundra-6004.herokuapp.com" }
+
   # Specify what domain to use for mailer URLs
   #config.action_mailer.default_url_options = {host: "https://nameless-tundra-6004.herokuapp.com"}
 
