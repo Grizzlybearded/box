@@ -10,7 +10,7 @@ class User < ActiveRecord::Base
   validates :password_confirmation, presence: true
   validates :name, presence: true, length: {maximum: 50}
   validates :investor_id, presence: true
-  #validates :invitation_id, uniqueness: true, presence: true
+  validates :invitation_id, uniqueness: true, presence: true
 
   has_many :sent_invitations, class_name: 'Invitation', foreign_key: 'sender_id'
   belongs_to :invitation
