@@ -3,6 +3,8 @@
 <h1><%= @fund.name %></h1>
 
 <div>
+	<div class="page-break">
+
 	<h2>Performance Comparison</h2>
 	<% if @new_funds_array.count <= 3 %>	
 		<table>
@@ -135,6 +137,10 @@
 		<%= content_tag :div, "", id: ("cumulative_return_chart"), data: {months: @chart_arr, names: @new_fund_names, keys: @ykeys_for_chart} %>
 	</fieldset><br/>
 
+	</div>
+
+	<div class="page-break">
+
 	<h2>Performance Comparison Over Time Periods</h2>
 	<table>
 		<caption align="bottom">All returns longer than 1 year are annualized.  The most recent month is <%= @new_fund_dates[1].strftime("%b-%y") %>.</caption>
@@ -223,7 +229,11 @@
 			</tr>
 		<% end %>
 	</table>
+
+	</div>
 </div>
+
+
 
 <% else %>
 
