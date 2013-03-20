@@ -15,10 +15,10 @@ ActionMailer::Base.delivery_method = :smtp
 
 ActionMailer::Base.smtp_settings = {
 	:user_name => "app11629203@heroku.com",
-	:password => "goldenshoe14",
+	:password => "4pvskcpt",
 	:domain => "nameless-tundra-6004.herokuapp.com",
 	:address => "smtp.sendgrid.net",
-	:port => 465,
+	:port => 587,
 	:authentication => :plain,
 	:enable_starttls_auto => true
 }
