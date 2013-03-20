@@ -48,24 +48,7 @@ Box::Application.configure do
   # Precompile additional assets (application.js, application.css, and all non-JS/CSS are already added)
   # config.assets.precompile += %w( search.js )
 
-  # added to create ensure host
-  config.action_mailer.default_url_options = { :host => "nameless-tundra-6004.herokuapp.com" }
 
-  # Disable delivery errors, bad email addresses will be ignored
-  config.action_mailer.raise_delivery_errors = true
-
-  # Change mail delivery to either :smtp, :sendmail, :file, :test
-  config.action_mailer.delivery_method = :smtp
-
-  config.action_mailer.smtp_settings = {
-    :user_name => "app11629203@heroku.com",
-    :password => "goldenshoe14",
-    :domain => "nameless-tundra-6004.herokuapp.com",
-    :address => "smtp.sendgrid.net",
-    :port => 465,
-    :authentication => :plain,
-    :enable_starttls_auto => true
-  }
 
   # Enable threaded mode
   # config.threadsafe!
