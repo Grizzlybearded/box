@@ -5,7 +5,7 @@ before_filter :correct_investor, except: [:create, :import]
 
 	def create
 		@month = Month.new(params[:month])
-		if current_user.investor.funds.where(core_bmark: false).pluck(:fund_id).include?(@month.fund_id)
+		if current_user.investor.funds.where(core_bmark: false).pluck(:fund_id).include?(@month.fund_id.to_s)
 			if @month.save
 				flash[:success] = "New month added"
 				redirect_to months_edit_for_fund_path(@month.fund)
