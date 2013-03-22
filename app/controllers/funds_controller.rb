@@ -39,6 +39,14 @@ before_filter :is_core_bmark, only: [:edit, :update, :destroy]
 		@month = @fund.months.build
 		@fund_dates = start_end_dates(@fund)
 
+		if params[:first_date]
+			@p_first_date = Date.parse(params[:first_date])
+		end
+
+		if params[:last_date]
+			@p_second_date = Date.parse(params[:last_date])
+		end
+
 		#create benchmarks with user_id if not already done
 		if !@fund.trackers.where(user_id: current_user.id).present?
 			@benchmark_ids = @fund.benchmarks.pluck(:benchmark_id)

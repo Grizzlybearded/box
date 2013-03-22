@@ -15,3 +15,13 @@ jQuery ->
       })
     $('#benchmark_name').autocomplete
       source: $('#benchmark_name').data('autocomp')
+    $(".date-picker").datepicker
+      maxDate: "+0m +0w"
+      changeMonth: true
+      changeYear: true
+      showButtonPanel: true
+      dateFormat: "MM yy"
+      onClose: (dateText, inst) ->
+        month = $("#ui-datepicker-div .ui-datepicker-month :selected").val()
+        year = $("#ui-datepicker-div .ui-datepicker-year :selected").val()
+        $(this).datepicker "setDate", new Date(year, month, 1)

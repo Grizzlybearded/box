@@ -1,4 +1,5 @@
 class InvitationsController < ApplicationController
+before_filter :authorize_user
 
 # user the sender_id when actually saving a user to save to the correct investor
 

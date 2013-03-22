@@ -117,18 +117,36 @@
 		</table>
 	<% end %>
 
+	<div style="float:left; margin-bottom:0; margin-left: 3%" >
+		<%= form_tag @fund, method: 'get' do %>
+			<p>
+				<div class="span2">
+					<%= text_field_tag :first_date, params[:first_date], placeholder: "Start date", class: "date-picker" %>
+				</div>
+				<div class="span2; margin-left:3px">
+					<%= text_field_tag :last_date, params[:last_date], placeholder: "End date", class: "date-picker" %>
+				</div>
+				<div style="float:right">
+					<%= submit_tag "Submit", class: "btn btn-medium btn-primary", name: nil %>
+				</div>
+			</p>
+		<% end %>
+	</div></br></br>
+
+
+
 	<div style="float:right; margin-bottom:0; margin-right: 5%" >
 		<%= form_tag trackers_path do %>
 			<%= hidden_field_tag :fund_id, @fund.id %>
 			<div class="span3" style="float:left; margin-right:3px">
 				<%= text_field_tag :benchmark_name, params[:benchmark_name], data: {autocomp: @arr_for_benchmark_autocomplete}, placeholder: "Enter fund or index...", class: "padding: 5px" %>
 			</div>
-			<div style="float:right">	
+			<div style="float:right">
 				<%= submit_tag "Add", class: "btn btn-medium btn-primary" %>
 			</div>
 		<% end %>
-	</div><br />
-	<br />
+	</div></br></br>
+
 
 	<h2>Cumulative Return Graph</h2>
 	<fieldset style="width:70%">
