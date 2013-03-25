@@ -16,7 +16,10 @@ jQuery ->
     $('#benchmark_name').autocomplete
       source: $('#benchmark_name').data('autocomp')
     $(".date-picker").datepicker
-      maxDate: "+0m +0w"
+      maxDate: $(".date-picker").data('maxdate')
+      minDate: $(".date-picker").data('mindate')
+      defaultDate: $(".date-picker").data('defdate')
+      yearRange: $(".date-picker").data('yearrange')
       changeMonth: true
       changeYear: true
       showButtonPanel: true

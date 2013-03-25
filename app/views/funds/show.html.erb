@@ -8,9 +8,6 @@
 		<table>
 			<caption align="bottom">
 				Date range is <%= @new_fund_dates[0].strftime("%b-%y") %> to <%= @new_fund_dates[1].strftime("%b-%y") %>.
-				<% if @new_fund_dates[1] != @fund_dates[1] %>
-					 Returns will include <%= @fund_dates[1].strftime("%b-%y") %> when data for all funds is received.
-				<% end %>
 				<% if @removed_funds.present? %>
 					<% @removed_funds.each do |f| %>
 						<% if f == @removed_funds[0] %>
@@ -19,7 +16,7 @@
 							and <% f.name %>
 						<% end %>
 					<% end %>
-					will be added when recent month data is received.
+					was removed due to a mismatch in date ranges.
 				<% end %>
 			</caption>		
 			<tr>
@@ -53,8 +50,12 @@
 						<td><%= number_with_precision(beta(@fund, f, @new_fund_dates[0], @new_fund_dates[1]), precision: 2) %></td>
 						<td><%= number_to_percentage(alpha(@fund, f, @new_fund_dates[0], @new_fund_dates[1])*100.0, precision: 2) %></td>
 						<td><%= number_to_percentage(correlation(@fund, f, @new_fund_dates[0], @new_fund_dates[1])*100.0, precision: 2) %></td>
-						<td><%= number_to_percentage(up_capture(@fund,f, @new_fund_dates[0], @new_fund_dates[1])*100.0, precision: 2) %></td>
-						<td><%= number_to_percentage(down_capture(@fund,f, @new_fund_dates[0], @new_fund_dates[1])*100.0, precision: 2) %></td>
+						<td>
+							<%= number_to_percentage(up_capture(@fund,f, @new_fund_dates[0], @new_fund_dates[1])*100.0, precision: 2) %>
+						</td>
+						<td>
+							<%= number_to_percentage(down_capture(@fund,f, @new_fund_dates[0], @new_fund_dates[1])*100.0, precision: 2) %>
+						</td>
 						<% if !@fund.trackers.where(user_id: nil).pluck(:benchmark_id).include?(f.id) %>
 							<td><%= link_to 'X', @fund.trackers.find_by_benchmark_id_and_user_id(f.id, current_user.id), method: :delete %></td>
 						<% else %>
@@ -68,9 +69,6 @@
 		<table>
 			<caption align="bottom">
 				Date range is <%= @new_fund_dates[0].strftime("%b-%y") %> to <%= @new_fund_dates[1].strftime("%b-%y") %>.
-				<% if @new_fund_dates[1] != @fund_dates[1] %>
-					 Returns will include <%= @fund_dates[1].strftime("%b-%y") %> when data for all funds is received.
-				<% end %>
 				<% if @removed_funds.present? %>
 					<% @removed_funds.each do |f| %>
 						<% if f == @removed_funds[0] %>
@@ -79,9 +77,9 @@
 							and <% f.name %>
 						<% end %>
 					<% end %>
-					will be added when recent month data is received.
+					was removed due to a mismatch in date ranges.
 				<% end %>
-			</caption>	
+			</caption>
 			<tr>
 				<th>
 				<th>Ann Return</th>
@@ -117,38 +115,42 @@
 		</table>
 	<% end %>
 
-	<div style="float:left; margin-bottom:0; margin-left: 3%" >
-		<%= form_tag @fund, method: 'get' do %>
-			<p>
+	<div class="row" style="margin-left: 5%; margin-right:5%">
+		<div style="float:left">
+			<%= form_tag @fund, method: 'get' do %>
 				<div class="span2">
-					<%= text_field_tag :first_date, params[:first_date], placeholder: "Start date", class: "date-picker" %>
+					<%= text_field_tag :first_date, params[:first_date],
+					data: {maxdate: @max_month_for_datepicker , 
+						mindate: @min_month_for_datepicker,
+						defdate: @default_date_for_start,
+						yearrange: @year_range},
+					placeholder: "Start date", class: "date-picker" %>
 				</div>
-				<div class="span2; margin-left:3px">
-					<%= text_field_tag :last_date, params[:last_date], placeholder: "End date", class: "date-picker" %>
+				<div class="span2">
+					<%= text_field_tag :last_date, params[:last_date], 
+					data: {maxdate: @max_month_for_datepicker , 
+						mindate: @min_month_for_datepicker,
+						defdate: @default_date_for_end,
+						year: @year_range},
+					placeholder: "End date", class: "date-picker" %>
 				</div>
-				<div style="float:right">
-					<%= submit_tag "Submit", class: "btn btn-medium btn-primary", name: nil %>
+				<%= submit_tag "Submit", class: "btn btn-medium btn-primary", name: nil %>
+			<% end %>
+		</div>
+
+		<div class="span3" style="float:right; margin-top:0px">
+			<%= form_tag trackers_path do %>
+				<%= hidden_field_tag :fund_id, @fund.id %>
+				<%= text_field_tag :benchmark_name, params[:benchmark_name], data: {autocomp: @arr_for_benchmark_autocomplete}, placeholder: "Enter fund or index..." %>
+				<div style="float:right; margin-left:3px">
+					<%= submit_tag "Add", class: "btn btn-medium btn-primary" %>
 				</div>
-			</p>
-		<% end %>
-	</div></br></br>
+			<% end %>
+		</div>
+	</div>
 
 
-
-	<div style="float:right; margin-bottom:0; margin-right: 5%" >
-		<%= form_tag trackers_path do %>
-			<%= hidden_field_tag :fund_id, @fund.id %>
-			<div class="span3" style="float:left; margin-right:3px">
-				<%= text_field_tag :benchmark_name, params[:benchmark_name], data: {autocomp: @arr_for_benchmark_autocomplete}, placeholder: "Enter fund or index...", class: "padding: 5px" %>
-			</div>
-			<div style="float:right">
-				<%= submit_tag "Add", class: "btn btn-medium btn-primary" %>
-			</div>
-		<% end %>
-	</div></br></br>
-
-
-	<h2>Cumulative Return Graph</h2>
+	<h2>Cumulative Return Graph - Return of $1</h2>
 	<fieldset style="width:70%">
 		<%= content_tag :div, "", id: ("cumulative_return_chart"), data: {months: @chart_arr, names: @new_fund_names, keys: @ykeys_for_chart} %>
 	</fieldset><br/>

@@ -32,7 +32,13 @@
 
 		@fund_returns = Month.where(fund_id: fund.id, mend: @mends).pluck(:fund_return).map{|n| n / 100.0}
 
-		return calc_ann_return(@fund_returns)/calc_ann_return(@ind_returns)
+		if @ind_returns == []
+			@return_up_cap = '--'
+		else
+			@return_up_cap = (@fund_returns == [] ? 0 : calc_ann_return(@fund_returns))/calc_ann_return(@ind_returns)
+		end
+
+		return @return_up_cap
 	end
 
 	def down_capture(fund, index, start_date = nil, end_date = nil)
@@ -49,7 +55,13 @@
 
 		@fund_returns = Month.where(fund_id: fund.id, mend: @mends).pluck(:fund_return).map{|n| n / 100.0}
 
-		return calc_ann_return(@fund_returns)/calc_ann_return(@ind_returns)
+		if @ind_returns == []
+			@return_down_cap = '--'
+		else
+			@return_down_cap = (@fund_returns == [] ? 0 : calc_ann_return(@fund_returns))/calc_ann_return(@ind_returns)
+		end
+
+		return @return_down_cap
 	end
 
 	def ann_return_by_date(fund, start_date = nil, end_date = nil)
@@ -104,11 +116,96 @@
 		return @final_dates
 	end
 
-	def adjust_funds_array(funds = [], date_one, date_two)
-		#spit out the correct funds array
+	def adjust_dates_from_params(dates = [], start_date = nil, end_date = nil)
+		@final_dates = dates
+
+		begin
+			@start_date = Date.parse(start_date.to_s)
+		rescue
+			@start_date = @final_dates[0]
+		end
+
+		begin
+			@end_date = Date.parse(end_date.to_s)
+		rescue
+			@end_date = @final_dates[1]
+		end
+
+		# check that dates are at least 3 months apart, if not, make them so that they are
+		# check that start_date is after the final_date[0] if start_date.present?.  check that the end_date is before the final_date[1] if end_date.present?
+		# check if start_date == final_date[0] && the difference between start_date and end_date are less than 3
+		# else, check that start_date and end_date are at least a difference of three months, if they are then do nothing.  if not then change them.
+		
+		
+		#if @start_date && @end_date
+
+			if date_month_diff(@start_date, @end_date) < 2
+				@end_date = @start_date.months_since(2)
+			end
+
+			if @start_date <= @final_dates[0]
+				if date_month_diff(@final_dates[0], @end_date) < 2
+					@final_dates[1] = @final_dates[0].months_since(2)
+				end
+			elsif @final_dates[0] < @start_date && @start_date < @final_dates[1].months_ago(1)
+				@final_dates[0] = @start_date
+			end
+
+			if @end_date >= @final_dates[1]
+				if date_month_diff(@start_date, @final_dates[1]) < 2
+					@final_dates[0] = @final_dates[1].months_ago(2)
+				end
+			elsif @final_dates[0].months_since(1) < @end_date && @end_date < @final_dates[1]
+				@final_dates[1] = @end_date
+			end
+
+		#elsif @start_date && !@end_date.present?
+		#	if date_month_diff(@start_date, @final_dates[1]) < 2
+		#		@final_dates[0] = @final_dates[1].months_ago(2)
+		#	elsif @final_dates[0] < @start_date && @start_date < @final_dates[1].months_ago(1)
+		#		@final_dates[0] = @start_date
+		#	end
+		#elsif !@start_date.present? && @end_date
+		#	if date_month_diff(@final_dates[0], @end_date) < 2
+		#		@final_dates[1] = @final_dates[0].months_since(2)
+		#	elsif @final_dates[0].months_since(1) < @end_date && @end_date < @final_dates[1]
+		#		@final_dates[1] = @end_date
+		#	end
+		#end
+
+		# REMEMBER TO SET THE PARAMS EQUAL TO THE FINAL DATES IN THE SHOW VIEW AND/OR CONTROLLER
+
+		return @final_dates
+	end
+
+	def date_month_diff(date_one, date_two)
+		# @diff = (@one_dates[1].year - @two_dates[1].year)*12 + (@one_dates[1].month - @two_dates[1].month)
+		@date_one = date_one
+		@date_two = date_two
+
+		@diff = (@date_two.year - @date_one.year) * 12 + (@date_two.month - @date_one.month)
+
+		return @diff
+	end
+
+	def adjust_funds_array(funds = [])
+		
 		@funds_array = funds
-		funds.each do |f|
-			if f.months.where(mend: [date_one, date_two]).count == 0
+
+		#eliminate funds with less than 3 months.
+		#eliminate funds with dates that don't overlap at least 3 months
+
+		@first_date = @funds_array[0].months.minimum(:mend)
+		@end_date = @funds_array[0].months.maximum(:mend)
+
+		#spit out the correct funds array
+		
+		@funds_array.each do |f|
+			if f.months.count < 3 || f.months.maximum(:mend) < @first_date.months_since(2) || f.months.minimum(:mend) > @end_date.months_ago(2)
+				#f.months.where(mend: [date_one, date_two]).count == 0
+
+				puts f.months.last.mend
+
 				@funds_array.delete(f)
 			end
 		end

@@ -39,12 +39,16 @@ before_filter :is_core_bmark, only: [:edit, :update, :destroy]
 		@month = @fund.months.build
 		@fund_dates = start_end_dates(@fund)
 
+		#checks for the params
 		if params[:first_date]
-			@p_first_date = Date.parse(params[:first_date])
+			@p_first_date = params[:first_date]
+		else
+			@p_first_date = nil
 		end
-
 		if params[:last_date]
-			@p_second_date = Date.parse(params[:last_date])
+			@p_second_date = params[:last_date]
+		else
+			@p_second_date = nil
 		end
 
 		#create benchmarks with user_id if not already done
@@ -68,15 +72,39 @@ before_filter :is_core_bmark, only: [:edit, :update, :destroy]
 
 		if @fund_dates[0].present?
 
+
+
+			#THE FOLLOWING IF STATEMENT IS THE FIRST THING TO FIX IN THE MORNING. DON'T DELETE FUNDS
+
+
 			#after this if statement, don't use funds_array, instead use @new_funds_array
 			if @funds_array.count == 3
 				#takes funds out if they don't have the same two front months as the fund at hand
-				@new_funds_array = adjust_funds_array(@funds_array , @fund_dates[1], @fund_dates[1].months_ago(1))
+
+
+
+				# change this to check for funds that don't have matching dates that overlap
+				# add notification for any funds that are removed due to this.
+
+				#how to handle funds with less than 3 dates?
+
+
+				@new_funds_array = adjust_funds_array(@funds_array)
 			else
 				@new_funds_array = @funds_array
 			end
 
-			@new_fund_dates = adjust_to_same_dates(@new_funds_array)
+			@max_fund_dates = adjust_to_same_dates(@new_funds_array)
+			@max_month_for_datepicker = '-' + date_month_diff(@max_fund_dates[1], Date.today.at_beginning_of_month).to_s + 'm'
+			@min_month_for_datepicker = '-' + date_month_diff(@max_fund_dates[0], Date.today.at_beginning_of_month).to_s + 'm'
+
+			@new_fund_dates = adjust_dates_from_params(@max_fund_dates, @p_first_date, @p_second_date)
+			@default_date_for_start = '-' + date_month_diff(@new_fund_dates[0], Date.today.at_beginning_of_month).to_s + 'm'
+			@default_date_for_end = '-' + date_month_diff(@new_fund_dates[1], Date.today.at_beginning_of_month).to_s + 'm'
+
+			#year range for datepicker
+			@year_range = @max_fund_dates[0].year.to_s + ":" + @max_fund_dates[1].year.to_s
+
 
 			#get fund names for graph labels
 			@new_fund_names = @new_funds_array.map{|n| n.name}

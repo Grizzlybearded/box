@@ -61,7 +61,6 @@ before_filter :is_current_benchmark, only: [:destroy]
 		id_to_array = [@tracker.benchmark_id]
 		@default_trackers = @parent_fund.trackers.where(user_id: nil).limit(2).pluck(:benchmark_id) #ids of default
 		@non_default_trackers = @parent_fund.trackers.where(user_id: current_user.id).pluck(:benchmark_id) #ids of benchmark
-		
 
 		if @fund.bmark?
 			#both non default
@@ -69,30 +68,30 @@ before_filter :is_current_benchmark, only: [:destroy]
 				@tracker.destroy
 				@parent_fund.trackers.build(benchmark_id: @default_trackers[0], user_id: current_user.id).save
 				flash[:success] = "Benchmark replaced with default."
-				redirect_to :back
+				redirect_to @parent_fund
 			elsif (@default_trackers - @non_default_trackers).count == 0
 			#both are default - don't do anything - user won't be able to destroy from the show view.
 				flash[:notice] = "This is a default fund.  Change it from the Fund Edit page."
-				redirect_to :back
+				redirect_to @parent_fund
 			elsif (@default_trackers - @non_default_trackers).count == 1
 				if (id_to_array - @default_trackers).count != 0 #this is not a default fund
 					@tracker.destroy
 					local = @default_trackers - @non_default_trackers
 					@parent_fund.trackers.build(benchmark_id: local[0], user_id: current_user.id).save
 					flash[:success] = "Benchmark replaced with default."
-					redirect_to :back
+					redirect_to @parent_fund
 				else #this is a default fund
 					flash[:notice] = "This is a default fund.  Change it from the Fund Edit page."
-					redirect_to :back	
+					redirect_to @parent_fund
 				end
 			else
-				flash[:notice] = "Something is wrong with the code"
-				redirect_to :back
+				flash[:notice] = "We are updating internal systems. Please excuse any mishaps in the meantime."
+				redirect_to @parent_fund
 			end
 		else
 			@tracker.destroy
 			flash[:success] = "Benchmark removed from fund."
-			redirect_to :back
+			redirect_to @parent_fund
 		end
 	end
 
