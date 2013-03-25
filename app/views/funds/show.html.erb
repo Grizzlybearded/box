@@ -119,7 +119,7 @@
 		<div style="float:left">
 			<%= form_tag @fund, method: 'get' do %>
 				<div class="span2">
-					<%= text_field_tag :first_date, params[:first_date],
+					<%= text_field_tag :first_date, params[:first_date] = @new_fund_dates[0].strftime("%B %Y"),
 					data: {maxdate: @max_month_for_datepicker , 
 						mindate: @min_month_for_datepicker,
 						defdate: @default_date_for_start,
@@ -127,7 +127,7 @@
 					placeholder: "Start date", class: "date-picker" %>
 				</div>
 				<div class="span2">
-					<%= text_field_tag :last_date, params[:last_date], 
+					<%= text_field_tag :last_date, params[:last_date] = @new_fund_dates[1].strftime("%B %Y"), 
 					data: {maxdate: @max_month_for_datepicker , 
 						mindate: @min_month_for_datepicker,
 						defdate: @default_date_for_end,

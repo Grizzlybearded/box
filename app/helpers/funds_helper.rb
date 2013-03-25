@@ -188,6 +188,13 @@
 		return @diff
 	end
 
+	def years_diff(date_one, date_two)
+		@date_one = date_one
+		@date_two = date_two
+
+		return @date_two.year - @date_one.year
+	end
+
 	def adjust_funds_array(funds = [])
 		
 		@funds_array = funds

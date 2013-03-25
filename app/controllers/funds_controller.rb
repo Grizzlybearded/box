@@ -95,6 +95,7 @@ before_filter :is_core_bmark, only: [:edit, :update, :destroy]
 			end
 
 			@max_fund_dates = adjust_to_same_dates(@new_funds_array)
+
 			@max_month_for_datepicker = '-' + date_month_diff(@max_fund_dates[1], Date.today.at_beginning_of_month).to_s + 'm'
 			@min_month_for_datepicker = '-' + date_month_diff(@max_fund_dates[0], Date.today.at_beginning_of_month).to_s + 'm'
 
@@ -103,7 +104,10 @@ before_filter :is_core_bmark, only: [:edit, :update, :destroy]
 			@default_date_for_end = '-' + date_month_diff(@new_fund_dates[1], Date.today.at_beginning_of_month).to_s + 'm'
 
 			#year range for datepicker
-			@year_range = @max_fund_dates[0].year.to_s + ":" + @max_fund_dates[1].year.to_s
+			@first_date_for_year_range = adjust_to_same_dates(@new_funds_array)[0]
+			@last_date_for_year_range  = adjust_to_same_dates(@new_funds_array)[1]
+			@year_range = @first_date_for_year_range.year.to_s + ":" + @last_date_for_year_range.year.to_s
+			# year range wasn't working+ years_diff(@max_fund_dates[0], Date.today).to_s + ":-" + years_diff(@max_fund_dates[1], Date.today).to_s
 
 
 			#get fund names for graph labels
