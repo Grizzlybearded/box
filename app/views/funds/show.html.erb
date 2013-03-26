@@ -126,7 +126,7 @@
 						yearrange: @year_range},
 					placeholder: "Start date", class: "date-picker" %>
 				</div>
-				<div class="span2">
+				<div class="span2" style="margin-left:3px; margin-right:3px">
 					<%= text_field_tag :last_date, params[:last_date] = @new_fund_dates[1].strftime("%B %Y"), 
 					data: {maxdate: @max_month_for_datepicker , 
 						mindate: @min_month_for_datepicker,
@@ -141,10 +141,10 @@
 		<div class="span3" style="float:right; margin-top:0px">
 			<%= form_tag trackers_path do %>
 				<%= hidden_field_tag :fund_id, @fund.id %>
-				<%= text_field_tag :benchmark_name, params[:benchmark_name], data: {autocomp: @arr_for_benchmark_autocomplete}, placeholder: "Enter fund or index..." %>
-				<div style="float:right; margin-left:3px">
-					<%= submit_tag "Add", class: "btn btn-medium btn-primary" %>
+				<div style="float:left; margin-right:3px">
+					<%= text_field_tag :benchmark_name, params[:benchmark_name], data: {autocomp: @arr_for_benchmark_autocomplete}, placeholder: "Enter fund or index..." %>
 				</div>
+				<%= submit_tag "Add", class: "btn btn-medium btn-primary" %>
 			<% end %>
 		</div>
 	</div>

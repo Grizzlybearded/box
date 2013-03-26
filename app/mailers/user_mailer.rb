@@ -1,5 +1,6 @@
 class UserMailer < ActionMailer::Base
   default from: "analyst@hfanalyst.com"
+  helper :funds
 
   # Subject can be set in your I18n file at config/locales/en.yml
   # with the following lookup:
@@ -9,6 +10,7 @@ class UserMailer < ActionMailer::Base
 
   def new_user_mail(user)
     @user = user
+    @root_url = root_url
     mail to: @user.email, subject: "Welcome to HF Analyst"
   end
 
@@ -24,5 +26,17 @@ class UserMailer < ActionMailer::Base
     @user = user
     @fund = fund
     mail to: @user.investor.users.pluck(:email), subject: "Data uploaded for #{@fund.name}"
+  end
+
+  def beta_email(user)
+    @user = user
+    @funds = @user.investor.funds.order("name").includes(:months)
+    @fund_ids = @user.investor.funds.pluck(:fund_id)
+    @last_month = Month.where(fund_id: @fund_ids).maximum(:mend)
+
+    @acwi = Fund.find_by_name("MSCI ACWI")
+    @root_url = root_url
+
+    mail to: @user.email, subject: "Beta to MSCI ACWI and Returns - HF Analyst"
   end
 end

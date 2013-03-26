@@ -1,0 +1,21 @@
+<h1>Last 12 months - Returns and Beta to ACWI. Data is through <%= @last_month.strftime("%b-%y") %>.</h1>
+
+<h2>Dig into your funds deeper <%= link_to 'here', @root_url %>.</h2>
+
+<table>
+	<tr>
+		<th>Fund</th>
+		<th>Beta - Last 12 months</th>
+		<th>Return - Last 12 months</th>
+	</tr>
+	<% @funds.each do |f| %>
+		<% if f.months.pluck(:mend).include?(@last_month) && 
+			f.months.pluck(:mend).include?(@last_month.months_ago(11)) %>
+			<tr>
+				<td><%= f.name %></td>
+				<td><%= number_with_precision(beta(f, @acwi, @last_month.months_ago(11), @last_month), precision: 2) %></td>
+				<td><%= number_to_percentage(ann_return_by_date(f, @last_month.months_ago(11), @last_month)*100.0, precision: 2) %></td>
+			</tr>
+		<% end %>
+	<% end %>
+</table>
