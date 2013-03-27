@@ -7,5 +7,7 @@ class Tracker < ActiveRecord::Base
   validates :fund_id, presence: true
   validates :benchmark_id, presence: true
 
+  validates_uniqueness_of :benchmark_id, scope: [:fund_id, :user_id]
+
   default_scope order: 'trackers.created_at DESC'
 end

@@ -53,7 +53,7 @@ before_filter :is_core_bmark, only: [:edit, :update, :destroy]
 
 		#create benchmarks with user_id if not already done
 		if !@fund.trackers.where(user_id: current_user.id).present?
-			@benchmark_ids = @fund.benchmarks.pluck(:benchmark_id)
+			@benchmark_ids = @fund.trackers.where(user_id: nil).pluck(:benchmark_id)
 			@benchmark_ids.each do |b|
 				Tracker.new(fund_id: @fund.id, benchmark_id: b, user_id: current_user.id).save
 			end
