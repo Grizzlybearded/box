@@ -6,6 +6,11 @@ gem 'bcrypt-ruby', '3.0.1'
 gem 'faker', '1.0.1'
 gem 'jquery-datatables-rails', github: 'rweng/jquery-datatables-rails'
 
+gem 'roo'
+gem 'rubyzip'
+gem 'spreadsheet'
+gem 'nokogiri'
+
 group :production do
 	gem 'pg', '0.12.2'
 end

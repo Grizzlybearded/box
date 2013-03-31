@@ -1,11 +1,10 @@
 class MonthsController < ApplicationController
 before_filter :authorize_user
-#before_filter :authorize_ga, only: [:import]
-before_filter :correct_investor, except: [:create, :import]
+before_filter :correct_investor, except: [:create]
 
 	def create
 		@month = Month.new(params[:month])
-		if current_user.investor.funds.where(core_bmark: false).pluck(:fund_id).include?(@month.fund_id.to_s)
+		if current_user.investor.funds.where(core_bmark: false).include?(@month.fund)
 			if @month.save
 				flash[:success] = "New month added"
 				redirect_to months_edit_for_fund_path(@month.fund)
@@ -40,17 +39,19 @@ before_filter :correct_investor, except: [:create, :import]
 	end
 
 	#make is so that the user can't import unless he is an owner of the fund.
+=begin
 	def import
 		@fund = Fund.find_by_id(params[:fund_id])
 		if current_user.investor.funds.where(core_bmark: false).include?(@fund)
 			Month.import(params[:file], @fund.id)
-			UserMailer.fund_data_imported(current_user, @fund).deliver
 			redirect_to root_url, notice: "Fund data imported"
 		else
 			flash[:notice] = "You may only import data for funds in which you are invested"
 			redirect_to :back
 		end
 	end
+=end
+
 
 	private
 		def correct_investor

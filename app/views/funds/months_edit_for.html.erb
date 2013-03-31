@@ -31,13 +31,3 @@
 	<%= hidden_field_tag 'month[fund_id]', @fund.id %>
 	<%= render 'shared/month_form', f: builder %>
 <% end %>
-
-<h2>Import Returns</h2>
-
-<fieldset>
-	<%= form_tag import_months_path, multipart: true do %>
-		<%= file_field_tag :file %>
-		<%= hidden_field_tag :fund_id, @fund.id %>
-		<%= submit_tag "Import" %>
-	<% end %>
-</fieldset>

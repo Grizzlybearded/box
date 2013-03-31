@@ -1,0 +1,24 @@
+<h1>Import Returns</h1>
+<div style="margin-left: 5%">
+	Import returns with an Excel file - <strong>xlsx format only</strong>. The top row should be the column name. The following columns are required.
+</div>
+
+<div style="margin-left: 5%">
+	<ul>
+		<li><strong>Date</strong> - If an error log that says Mend comes up, it refers to Date</li>
+		<li><strong>Name</strong> - Fund name</li>
+		<li><strong>Return</strong> - Return (without the % symbol.  For example, 1.23% would be 1.23)</li>
+	</ul>
+</div>
+
+<div style="margin-left: 5%">
+	All fund names and column names are <strong>case sensitive</strong>. Importing returns will create new data and/or overwrite old data if there is any. 
+</div></br>
+
+<div style="margin-left: 5%">
+	<%= form_for @import_return do |f| %>
+		<%= render 'shared/error_messages', object: f.object %>
+		<%= f.file_field :file %>
+		<%= f.submit "Import", class: "btn btn-large btn-primary" %>
+	<% end %>
+</div>

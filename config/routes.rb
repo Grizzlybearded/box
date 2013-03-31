@@ -1,26 +1,22 @@
 Box::Application.routes.draw do
 
+  resources :import_returns, only: [:new, :create]
   resources :relationships, only: [:create, :destroy]
   resources :trackers, only: [:create, :destroy]
   resources :investors
   resources :sessions, only: [:new, :create, :destroy]
   resources :users, only: [:new, :create, :destroy, :edit, :update, :index]
   resources :invitations, only: [:new, :create]
+  resources :months, only: [:new, :create, :edit, :update, :destroy]
   resources :funds do
     member do
       get :months_edit_for
     end
   end
 
-  resources :months do
-    collection { post :import }
-  end
-
   match '/signup/:invitation_token', to: 'users#new', as: 'signup'
   match '/highwater_mark', to: 'funds#highwater_mark'
   match '/login', to: 'sessions#new'
-  match '/current', to:'months#current_month'
-  match '/current_rates', to: 'months#current_month_rates'
 
   root to: 'funds#recent_returns'
 

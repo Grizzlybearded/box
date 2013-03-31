@@ -36,7 +36,6 @@ before_filter :is_core_bmark, only: [:edit, :update, :destroy]
 
 	def show
 		@fund = Fund.find(params[:id])
-		@month = @fund.months.build
 		@fund_dates = start_end_dates(@fund)
 
 		#checks for the params

@@ -8,7 +8,20 @@
 		<li><%= link_to_unless_current 'User Index', users_path %></li>
 		<li><%= link_to_unless_current 'Investor Index', investors_path %></li>
 		--------------------
-	<% end %>
+	<% end %></br>
+
+	<% if !current_page?(root_path) && 
+		!current_page?(highwater_mark_path) && 
+		!(controller.controller_name == 'funds' && controller.action_name == 'show') %>
+		<li>Manage Profile</li>
+		<li style="margin-left:10px"><%= link_to_unless_current 'Edit profile', edit_user_path(current_user) %><li>
+		<li>Manage Funds</li>
+		<li style="margin-left:10px"><%= link_to_unless_current 'Funds', funds_path %><li>
+		<li style="margin-left:10px"><%= link_to_unless_current "Create new fund", new_fund_path %></li>
+		<li style="margin-left:10px"><%= link_to_unless_current 'Import returns', new_import_return_path %><li>
+		<li><%= "Manage #{current_user.investor.name}" %></li>
+		<li style="margin-left:10px"><%= link_to_unless_current "#{current_user.investor.name}", current_user.investor %><li>
+	<% else %>
 		<li>My Funds</li>
 		<% Fund::VALID_FUND_TYPES.each do |i| %>
 			<% if current_user.investor.funds.where(fund_type: i, bmark: false).present? %>
@@ -20,5 +33,6 @@
 				</li>
 			<% end %>
 		<% end %>
+	<% end %>
 </ul>
 <% end %>
