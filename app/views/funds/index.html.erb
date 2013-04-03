@@ -36,11 +36,11 @@
 	<% @indices.each do |i| %>
 		<tr>
 			<td style="text-align:left"><%= link_to i.name, i %></td>
-				<% if i.core_bmark? %>
+				<% if i.core_bmark? && !current_user.global_admin?%>
 					<td>--</td>
 					<td>--</td>
 					<td>--</td>
-				<% elsif i.core_bmark == false || current_user.global_admin? %>
+				<% elsif !i.core_bmark? || current_user.global_admin? %>
 					<td><%= link_to 'Edit', edit_fund_path(i) %></td>
 					<td><%= link_to 'Edit Returns', months_edit_for_fund_path(i) %></td>
 					<td><%= link_to 'Delete', i, method: :delete, data: {confirm: "Are you sure?"}  %></td>
@@ -48,13 +48,3 @@
 		</tr>
 	<% end %>
 </table>
-
-<% if current_user.global_admin? %>
-	<h2>Import Data</h2>
-
-	<%= form_tag import_months_path, multipart: true do %>
-		<%= file_field_tag :file %>
-		<%= submit_tag "Import" %>
-	<% end %>
-
-<% end %>

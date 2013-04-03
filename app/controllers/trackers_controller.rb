@@ -26,7 +26,8 @@ before_filter :is_current_benchmark, only: [:destroy]
 				redirect_to root_url
 			end
 		elsif @benchmark.present?
-			if @fund.benchmarks.where(bmark: false).count < 3
+			@benchmark_array_for_first_if = @fund.benchmarks.where(bmark: false).pluck(:benchmark_id)
+			if Tracker.where(fund_id: @fund.id, benchmark_id: @benchmark_array_for_first_if, user_id: current_user.id).count < 3
 				if @fund.trackers.build(benchmark_id: @benchmark.id, user_id: current_user.id).save
 					flash[:success] = "New benchmark added!"
 					redirect_to @fund

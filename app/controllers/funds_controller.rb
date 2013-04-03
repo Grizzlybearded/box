@@ -2,7 +2,9 @@ class FundsController < ApplicationController
 before_filter :authorize_user
 before_filter :correct_investor, except: [:show, :recent_returns, :highwater_mark, :index, :new, :create]
 before_filter :correct_investor_for_show, only: [:show]
-before_filter :is_core_bmark, only: [:edit, :update, :destroy]
+
+#this before filter is redundant
+#before_filter :is_core_bmark, only: [:edit, :update, :destroy, :months_edit_for]
 
 	def new
 		@fund = Fund.new
@@ -23,7 +25,7 @@ before_filter :is_core_bmark, only: [:edit, :update, :destroy]
 			@fund.trackers.build(benchmark_id: @fund_benchmarks[1], user_id: nil).save
 			current_user.investor.relationships.build(fund_id: @fund.id).save
 			flash[:success] = "New fund created"
-			redirect_to months_edit_for_fund_path(@fund)
+			redirect_to new_import_return_path
 		else
 			render 'new'
 		end
@@ -295,19 +297,18 @@ before_filter :is_core_bmark, only: [:edit, :update, :destroy]
 	end
 
 	def recent_returns
-		@recent_date = Month.maximum(:mend)
-		@funds_array = current_user.investor.funds.where(bmark: false).order("name")
+		@funds_array = current_user.investor.funds.where(bmark: false)
+		@fund_ids = @funds_array.map {|n| n.id}
 
-		@fund_ids = @funds_array.map{|n| n.id}
+		@recent_date = Month.where(fund_id: @fund_ids).maximum(:mend)
 
 		#store the funds that have the max date
-		@funds_with_date = Month.where(mend: @recent_date, fund_id: @fund_ids).map{|n| n.fund}
+		@funds_with_date = Month.where(mend: @recent_date, fund_id: @fund_ids).map{|n| n.fund}.sort {|a,b| a.name <=> b.name}
 
-
-		while ( (@funds_with_date.count / (@funds_array.count * 1.0)) < 0.6 )
-			@recent_date = @recent_date.months_ago(1)
-			@funds_with_date = Month.where(mend: @recent_date, fund_id: @fund_ids).map{|n| n.fund}
-		end
+		#if (@funds_with_date.count / (@funds_array.count * 1.0)) <= 0.5
+		#	@recent_date = @recent_date.months_ago(1)
+		#	@funds_with_date = Month.where(mend: @recent_date, fund_id: @fund_ids).map{|n| n.fund}
+		#end
 		
 		@removed_funds = @funds_array - @funds_with_date
 	end
@@ -323,10 +324,10 @@ before_filter :is_core_bmark, only: [:edit, :update, :destroy]
 			redirect_to root_path unless current_user.investor.funds.where(core_bmark: false).include?(@fund) || current_user.global_admin?
 		end
 
-		def is_core_bmark
-			@fund = Fund.find(params[:id])
-			redirect_to root_path unless @fund.core_bmark == false || current_user.global_admin?
-		end
+		#def is_core_bmark
+		#	@fund = Fund.find(params[:id])
+		#	redirect_to root_path unless !@fund.core_bmark? || current_user.global_admin?
+		#end
 
 	#DONE restrict edit/destroy of funds with core_bmark == true to global admin in controller and view
 	#DONE create relationships for each core_bmark when investor is created.
