@@ -44,7 +44,7 @@ class ImportReturn
 			fund = @investor.funds.find_by_name(row["Name"])
 			month = Month.find_by_mend_and_fund_id(row["Date"].at_beginning_of_month, fund == nil ? nil : fund.id) || 
   			Month.new(mend: row["Date"].at_beginning_of_month, fund_id: (fund == nil ? nil : fund.id))
-			month.assign_attributes({fund_return: row["Return"]})
+			month.assign_attributes({fund_return: row["Return"]*100})
 			month
 		end
 	end
