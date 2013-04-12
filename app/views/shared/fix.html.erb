@@ -24,7 +24,14 @@ a) DONE - header: if logged_in? get rid of "Log In Link"
 b) DONE - add before_filters everywhere   
 c) DONE - move CREATE USER to the INVESTOR SHOW PAGE
 
-	
+	style="margin-left:3px; margin-right:3px"
+
+	style="float:left; margin-right:3px"
+
+
+	['fund_0','fund_1','fund_2','fund_3','fund_4','fund_5']
+
+	$('#cumulative_return_chart').data('keys_from_hash')
 
 	#the corresponding code for the show view for funds
 
@@ -35,6 +42,8 @@ c) DONE - move CREATE USER to the INVESTOR SHOW PAGE
 	<td><%= number_to_percentage(max_drawdown(f, @new_fund_dates[0], @new_fund_dates[1]), precision: 2) %></td>
 	
 
+	3.17.2013
+	<%= hidden_field_tag 'user[investor_id]', current_user.investor_id %>
 
 
 

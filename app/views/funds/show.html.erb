@@ -120,17 +120,17 @@
 			<%= form_tag @fund, method: 'get' do %>
 				<div class="span2">
 					<%= text_field_tag :first_date, params[:first_date] = @new_fund_dates[0].strftime("%B %Y"),
-					data: {maxdate: @max_month_for_datepicker , 
-						mindate: @min_month_for_datepicker,
-						defdate: @default_date_for_start,
+					data: {maxdate: @max_date_for_datepicker, 
+						mindate: @min_date_for_datepicker,
+						defdate: '-' + date_month_diff(@new_fund_dates[0], Date.today.at_beginning_of_month).to_s + 'm',
 						yearrange: @year_range},
 					placeholder: "Start date", class: "date-picker" %>
 				</div>
 				<div class="span2" style="margin-left:3px; margin-right:3px">
 					<%= text_field_tag :last_date, params[:last_date] = @new_fund_dates[1].strftime("%B %Y"), 
-					data: {maxdate: @max_month_for_datepicker , 
-						mindate: @min_month_for_datepicker,
-						defdate: @default_date_for_end,
+					data: {maxdate: @max_date_for_datepicker, 
+						mindate: @min_date_for_datepicker,
+						defdate: '-' + date_month_diff(@new_fund_dates[1], Date.today.at_beginning_of_month).to_s + 'm',
 						year: @year_range},
 					placeholder: "End date", class: "date-picker" %>
 				</div>
@@ -149,7 +149,6 @@
 		</div>
 	</div>
 
-
 	<h2>Cumulative Return Graph - Return of $1</h2>
 	<fieldset style="width:70%">
 		<%= content_tag :div, "", id: ("cumulative_return_chart"), data: {months: @chart_arr, names: @new_fund_names, keys: @ykeys_for_chart} %>
@@ -164,16 +163,13 @@
 				<th><%= f %></th>
 			<% end %>
 		</tr>
-		<% @new_funds_array.each do |f| %>
+		<% @perf_over_diff_periods.each do |f| %>
 			<tr>
-				<td><%= link_to f.name, f %></td>
-				<% @perf_months_ago.each do |n| %>
-					<% if start_end_dates(f)[0] <= n %>
-						<td>
-							<%= number_to_percentage(calc_ann_return(get_returns( f, n, @new_fund_dates[1]))*100.0, precision: 2) %>
-						</td>
+				<% f.each do |n| %>
+					<% if n.kind_of?(Fund) %>
+						<td><%= link_to n.name, n %></td>
 					<% else %>
-						<td></td>
+						<td><%= number_to_percentage(n*100, precision: 2) %></td>
 					<% end %>
 				<% end %>
 			</tr>

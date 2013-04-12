@@ -210,9 +210,6 @@
 		@funds_array.each do |f|
 			if f.months.count < 3 || f.months.maximum(:mend) < @first_date.months_since(2) || f.months.minimum(:mend) > @end_date.months_ago(2)
 				#f.months.where(mend: [date_one, date_two]).count == 0
-
-				puts f.months.last.mend
-
 				@funds_array.delete(f)
 			end
 		end

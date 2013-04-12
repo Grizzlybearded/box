@@ -40,18 +40,6 @@ before_filter :correct_investor_for_show, only: [:show]
 		@fund = Fund.find(params[:id])
 		@fund_dates = start_end_dates(@fund)
 
-		#checks for the params
-		if params[:first_date]
-			@p_first_date = params[:first_date]
-		else
-			@p_first_date = nil
-		end
-		if params[:last_date]
-			@p_second_date = params[:last_date]
-		else
-			@p_second_date = nil
-		end
-
 		#create benchmarks with user_id if not already done
 		if !@fund.trackers.where(user_id: current_user.id).present?
 			@benchmark_ids = @fund.trackers.where(user_id: nil).pluck(:benchmark_id)
@@ -62,146 +50,55 @@ before_filter :correct_investor_for_show, only: [:show]
 
 		#get benchmarks with the user id 
 		@benchmark_ids_for_funds_array = @fund.trackers.where(user_id: current_user.id).pluck(:benchmark_id)
+		
+		@benchmark_ids_for_funds_array = @fund.trackers.where(user_id: current_user.id).pluck(:benchmark_id)
 		@fund_bmark_false = Fund.where(id: @benchmark_ids_for_funds_array, bmark: false).order("name")
 		@fund_bmark_true = Fund.where(id: @benchmark_ids_for_funds_array, bmark: true).order("name")
-
 		@funds_array = (@fund_bmark_false + @fund_bmark_true).unshift(@fund)
-		#####
+
 		#NEED TO INSTANTIATE FUNDS_ARRAY BEFORE HERE
-		#####
-		#####
 
 		if @fund_dates[0].present?
 
+			#adjust the funds array to eliminate funds that have less than 3 dates or that don't have overlapping dates
+			@new_funds_array = adjust_funds_array(@funds_array)
 
-
-			#THE FOLLOWING IF STATEMENT IS THE FIRST THING TO FIX IN THE MORNING. DON'T DELETE FUNDS
-
-
-			#after this if statement, don't use funds_array, instead use @new_funds_array
-			if @funds_array.count == 3
-				#takes funds out if they don't have the same two front months as the fund at hand
-
-
-
-				# change this to check for funds that don't have matching dates that overlap
-				# add notification for any funds that are removed due to this.
-
-				#how to handle funds with less than 3 dates?
-
-
-				@new_funds_array = adjust_funds_array(@funds_array)
-			else
-				@new_funds_array = @funds_array
-			end
-
+			#get the max/min dates from this array
 			@max_fund_dates = adjust_to_same_dates(@new_funds_array)
 
-			@max_month_for_datepicker = '-' + date_month_diff(@max_fund_dates[1], Date.today.at_beginning_of_month).to_s + 'm'
-			@min_month_for_datepicker = '-' + date_month_diff(@max_fund_dates[0], Date.today.at_beginning_of_month).to_s + 'm'
+			#this is the actual set of dates that are going to be pushed from params and used throughout the controller
+			@new_fund_dates = adjust_dates_from_params(@max_fund_dates, params[:first_date], params[:last_date])
 
-			@new_fund_dates = adjust_dates_from_params(@max_fund_dates, @p_first_date, @p_second_date)
-			@default_date_for_start = '-' + date_month_diff(@new_fund_dates[0], Date.today.at_beginning_of_month).to_s + 'm'
-			@default_date_for_end = '-' + date_month_diff(@new_fund_dates[1], Date.today.at_beginning_of_month).to_s + 'm'
+			# this has to be set here, in the controller, because it doesn't refresh in the view
+			@max_date_for_datepicker = '-' + date_month_diff(adjust_to_same_dates(@new_funds_array)[1], Date.today.at_beginning_of_month).to_s + 'm' 
+			@min_date_for_datepicker = '-' + date_month_diff(adjust_to_same_dates(@new_funds_array)[0], Date.today.at_beginning_of_month).to_s + 'm'
 
 			#year range for datepicker
 			@first_date_for_year_range = adjust_to_same_dates(@new_funds_array)[0]
 			@last_date_for_year_range  = adjust_to_same_dates(@new_funds_array)[1]
 			@year_range = @first_date_for_year_range.year.to_s + ":" + @last_date_for_year_range.year.to_s
-			# year range wasn't working+ years_diff(@max_fund_dates[0], Date.today).to_s + ":-" + years_diff(@max_fund_dates[1], Date.today).to_s
-
+			# year range wasn't working + years_diff(@max_fund_dates[0], Date.today).to_s + ":-" + years_diff(@max_fund_dates[1], Date.today).to_s
 
 			#get fund names for graph labels
 			@new_fund_names = @new_funds_array.map{|n| n.name}
 			@removed_funds = @funds_array - @new_funds_array
 
-
-			#THIS WILL NEED TO BE CHANGED WHEN THE INVESTOR SETTINGS ARE CHANGED
+			# THIS WILL NEED TO BE CHANGED WHEN THE INVESTOR SETTINGS ARE CHANGED
 			@arr_for_benchmark_autocomplete = @current_user.investor.funds.pluck(:name) - @funds_array.map{|f| f.name}
 
-			#FIX THE CHART SO IT CAN HAVE VARIABLE INPUTS
+			# FIX THE CHART SO IT CAN HAVE VARIABLE INPUTS
 			@ykeys_for_chart = []
-			if @new_funds_array.count == 3
-				@chart_arr = hash_arr_cumulative_ret(@new_funds_array[0],@new_funds_array[1] ? @new_funds_array[1] : nil, @new_funds_array[2] ? @new_funds_array[2] : nil, @new_fund_dates[0], @new_fund_dates[1])
-				@ykeys_for_chart = ['fund_one', 'fund_two', 'fund_three']
-			else
-				@chart_arr = hash_arr_cumulative_for_many_benchmarks(@new_funds_array,@new_fund_dates[0], @new_fund_dates[1])
-				for i in 0..(@new_funds_array.count - 1 )
-					@ykeys_for_chart[i] = "fund_#{i}"
-				end
+			@chart_arr = hash_arr_cumulative_for_many_benchmarks(@new_funds_array,@new_fund_dates[0], @new_fund_dates[1])
+			for i in 0..(@new_funds_array.count - 1 )
+				@ykeys_for_chart[i] = "fund_#{i}"
 			end
 
-			#if params[:show_var].present?
-			#	@show_var = params[:show_var]
-			#else
-			#	@show_var = "aum"
-			#end
-
-			@perf_header = 		["1m", "3m", "6m", "1yr", "2yr", "3yr", "5yr", "7yr", "10yr"]
-			@perf_months_ago = 	[@new_fund_dates[1],
-									@new_fund_dates[1].months_ago(2),
-									@new_fund_dates[1].months_ago(5),
-									@new_fund_dates[1].months_ago(11),
-									@new_fund_dates[1].months_ago(23),
-									@new_fund_dates[1].months_ago(35),
-									@new_fund_dates[1].months_ago(59),
-									@new_fund_dates[1].months_ago(83),
-									@new_fund_dates[1].months_ago(119)]
-
+			# header for table and below that, months in the past to calculate returns for that table
+			@perf_header = ["1m", "3m", "6m", "1yr", "2yr", "3yr", "5yr", "7yr", "10yr"]
+			@perf_over_diff_periods = Fund.perf_over_diff_periods(@new_funds_array,@new_fund_dates[1])
 			
-			@years_header = [@new_fund_dates[1].year,
-								@new_fund_dates[1].years_ago(1).year,
-								@new_fund_dates[1].years_ago(2).year,
-								@new_fund_dates[1].years_ago(3).year,
-								@new_fund_dates[1].years_ago(4).year,
-								@new_fund_dates[1].years_ago(5).year,
-								@new_fund_dates[1].years_ago(6).year,
-								@new_fund_dates[1].years_ago(7).year,
-								@new_fund_dates[1].years_ago(8).year]
-
-			# get arrays for each fund with the yearly returns
-			# use parent and child array structure again
-			@all_funds_and_years = []
-			@all_years_for_fund = []
-			
-			@new_funds_array.each do |f|
-				@perf_year = @new_fund_dates[1].year
-				while ((@new_fund_dates[1].year - @perf_year) <= 9)
-					
-
-					#THIS DOESN'T CHECK FOR INDICES THAT HAVE RETURNS THAT START AFTER 9 YEARS AGO.  WILL GET A NIL ERROR IN CALC_ANN_RETURN WHEN THIS OCCUR
-
-
-					if f == @fund && (@perf_year >= start_end_dates(f)[0].year)
-						if @perf_year == @new_fund_dates[1].year
-							# checks during the chronological last year
-							@all_years_for_fund << calc_ann_return(get_returns(f, Date.new(@perf_year,1,1),@new_fund_dates[1]))
-							@all_years_for_fund.unshift(f)
-						elsif @perf_year == @new_fund_dates[0].year
-							# checks for the chronological first year
-							@all_years_for_fund << calc_ann_return(get_returns(f, @new_fund_dates[0], Date.new(@perf_year,12,1)))
-						else
-							@all_years_for_fund << calc_ann_return(get_returns(f, Date.new(@perf_year,1,1), Date.new(@perf_year,12,1)))
-						end
-					elsif f != @fund && (@perf_year >= start_end_dates(f)[0].year)
-						if @perf_year == @new_fund_dates[1].year
-							# checks during the chronological last year
-							@all_years_for_fund << calc_ann_return(get_returns(f, Date.new(@perf_year,1,1),@new_fund_dates[1]))
-							@all_years_for_fund.unshift(f)
-						else
-							@all_years_for_fund << calc_ann_return(get_returns(f, Date.new(@perf_year,1,1), Date.new(@perf_year,12,1)))
-						end
-					end
-					#iterate
-					@perf_year = @perf_year - 1
-				end
-				#store in the parent array unless the there are not values in the array
-				if @all_years_for_fund.present?
-					@all_funds_and_years << @all_years_for_fund
-				end
-				#clear child array
-				@all_years_for_fund = []
-			end
+			@years_header = Fund.years_header(@new_fund_dates[1])
+			@all_funds_and_years = Fund.all_funds_and_years(@new_funds_array, @new_fund_dates)
 
 			#find the minimum and maximum dates/years.  store the diff+1 in a variable - loop until we are greater than the variable
 			@parent_array = []

@@ -65,4 +65,137 @@ class Fund < ActiveRecord::Base
     end
     return @benchmarks
   end
+
+  def self.calc_ann_return(months = [])
+    # if less than 12 months, produce the return non-annualized
+
+    #make sure the number format is correct
+    if months.count <= 12
+      (months.map{|n| n + 1}.inject{|product, x| product*x} - 1)*1.0
+    else
+      (((months.map{|n| n + 1}.inject{|product, x| product*x})**(12.0/(months.count*1.0) )) - 1)*1.0
+    end
+  end
+
+  def self.get_returns(fund, start_date = nil, end_date = nil)
+    if !fund.nil?
+      if start_date.present? and end_date.present?
+        @months = Month.where(fund_id: fund.id, mend: start_date..end_date).pluck(:fund_return).map{|n| (n/100.0)}
+      elsif start_date.present? and !end_date.present?
+        @months = Month.where(fund_id: fund.id, mend: start_date..Month.where(fund_id: fund.id).maximum(:mend)).pluck(:fund_return).map{|n| (n/100.0)}
+      elsif !start_date.present? and end_date.present?
+        @months = Month.where(fund_id: fund.id, mend: Month.where(fund_id: fund.id).minimum(:mend)..end_date).pluck(:fund_return).map{|n| (n/100.0)}
+      else
+        @months = Month.where(fund_id: fund.id).pluck(:fund_return).map{|n| (n/100.0)}
+      end
+    end
+  end
+
+    #what are the inputs and outputs for the loops below
+    #input: @new_funds_array, @new_funds_dates.  uses calc_ann_return and get returns.
+    #output: @all_funds_and_years.  each array of arrays has the annual performance for a fund.
+
+    # get arrays for each fund with the yearly returns
+    # use parent and child array structure again
+    
+  def self.all_funds_and_years(funds_array = [], dates_array = [])
+    
+    #setting the initial fund and date variables
+    @new_funds_array = funds_array
+    @new_fund_dates = dates_array
+
+    @all_funds_and_years = []
+    @all_years_for_fund = []
+
+    @new_funds_array.each do |f|
+      @perf_year = @new_fund_dates[1].year
+      while ((@new_fund_dates[1].year - @perf_year) <= 9)
+        if f == @fund && (@perf_year >= start_end_dates(f)[0].year)
+          if @perf_year == @new_fund_dates[1].year
+            # checks during the chronological last year
+            @all_years_for_fund << calc_ann_return(get_returns(f, Date.new(@perf_year,1,1),@new_fund_dates[1]))
+            @all_years_for_fund.unshift(f)
+          elsif @perf_year == @new_fund_dates[0].year
+            # checks for the chronological first year
+            @all_years_for_fund << calc_ann_return(get_returns(f, @new_fund_dates[0], Date.new(@perf_year,12,1)))
+          else
+            @all_years_for_fund << calc_ann_return(get_returns(f, Date.new(@perf_year,1,1), Date.new(@perf_year,12,1)))
+          end
+        elsif f != @fund && (@perf_year >= start_end_dates(f)[0].year)
+          if @perf_year == @new_fund_dates[1].year
+            # checks during the chronological last year
+            @all_years_for_fund << calc_ann_return(get_returns(f, Date.new(@perf_year,1,1),@new_fund_dates[1]))
+            @all_years_for_fund.unshift(f)
+          else
+            @all_years_for_fund << calc_ann_return(get_returns(f, Date.new(@perf_year,1,1), Date.new(@perf_year,12,1)))
+          end
+        end
+        #iterate
+        @perf_year = @perf_year - 1
+      end
+      #store in the parent array unless the there are not values in the array
+      if @all_years_for_fund.present?
+        @all_funds_and_years << @all_years_for_fund
+      end
+      #clear child array
+      @all_years_for_fund = []
+    end
+
+    return @all_funds_and_years
+  end
+
+  def self.years_header(recent_year)
+    return [recent_year.year,
+              recent_year.years_ago(1).year,
+              recent_year.years_ago(2).year,
+              recent_year.years_ago(3).year,
+              recent_year.years_ago(4).year,
+              recent_year.years_ago(5).year,
+              recent_year.years_ago(6).year,
+              recent_year.years_ago(7).year,
+              recent_year.years_ago(8).year]
+  end
+
+  # performance comparison over different time periods
+  # inputs: array_of_performance_dates, the_most_recent_month, start_end_dates for each fund, funds_array
+  # uses:   calc_ann_return, get_returns
+  # outputs: fund at the head of each array.  ann_return in other spots
+
+  def self.perf_over_diff_periods(funds_array = [], recent_date)
+    arr_with_returns= []
+    child_arr = []
+    dates_array = [recent_date,
+                  recent_date.months_ago(2),
+                  recent_date.months_ago(5),
+                  recent_date.months_ago(11),
+                  recent_date.months_ago(23),
+                  recent_date.months_ago(35),
+                  recent_date.months_ago(59),
+                  recent_date.months_ago(83),
+                  recent_date.months_ago(119)]
+
+    funds_array.each do |f|
+      fund_start_date = start_end_dates(f)[0]
+      dates_array.each do |n|
+        if fund_start_date <= n
+          child_arr << calc_ann_return(get_returns(f,n,recent_date))
+        end
+      end
+      arr_with_returns << child_arr.unshift(f)
+      child_arr = [] #clear the child array for the next fund
+    end
+    return arr_with_returns
+  end
+
+  def self.start_end_dates(fund)
+    first_and_last_date = []
+    @months = fund.months
+    first_and_last_date << @months.minimum(:mend)  #first date where there is data
+    first_and_last_date << @months.maximum(:mend)  #last date where there is data
+
+    return first_and_last_date
+  end
+
+
+
 end
