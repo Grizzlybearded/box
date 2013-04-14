@@ -48,9 +48,7 @@ before_filter :correct_investor_for_show, only: [:show]
 			end
 		end
 
-		#get benchmarks with the user id 
-		@benchmark_ids_for_funds_array = @fund.trackers.where(user_id: current_user.id).pluck(:benchmark_id)
-		
+		#get benchmarks with the user id
 		@benchmark_ids_for_funds_array = @fund.trackers.where(user_id: current_user.id).pluck(:benchmark_id)
 		@fund_bmark_false = Fund.where(id: @benchmark_ids_for_funds_array, bmark: false).order("name")
 		@fund_bmark_true = Fund.where(id: @benchmark_ids_for_funds_array, bmark: true).order("name")
@@ -100,42 +98,9 @@ before_filter :correct_investor_for_show, only: [:show]
 			@years_header = Fund.years_header(@new_fund_dates[1])
 			@all_funds_and_years = Fund.all_funds_and_years(@new_funds_array, @new_fund_dates)
 
-			#find the minimum and maximum dates/years.  store the diff+1 in a variable - loop until we are greater than the variable
-			@parent_array = []
-			@child_array = []
-			@year = Month.where(fund_id: @fund.id).minimum(:mend).year
-			while @year < (Month.where(fund_id: @fund.id).maximum(:mend).year + 1) do
-				#create conditions for the mend to be pulled
-				@local_months = {}
-
-				Month.where(fund_id: @fund.id, mend: ( Date.new(@year,1,1)..Date.new(@year,12,1) ) ).each{|date| @local_months[date.mend] = date}
-
-				#iterate through 1-12 for each month.  push into the child array
-				for i in 1..12
-					# if month of object == loop, then save in x, else x = nil
-					if @local_months[Date.new(@year,i,1)].present?
-						@child_array << @local_months[Date.new(@year,i,1)].fund_return
-					else
-						@child_array << nil
-					end
-				end
-				@ytd = @child_array.reject{|n| n==nil}.map{|n| (n/100.0)+1}.inject{|product,x| product*x}
+			# the monthly returns for a fund.  
+			@parent_array = Fund.monthly_returns(@fund)
 			
-				if !@ytd.nil?
-					@ytd = (@ytd - 1)*100.0
-				end
-			
-				#store the ytd value in the child_array
-				@child_array<< @ytd
-			
-				#put the year in the front of the array
-				@child_array.unshift(@year)
-			
-				#store the child_array in the parent_array and reset for the next loop
-				@parent_array << @child_array
-				@child_array = []
-				@year += 1
-			end
 		end 		
 	end
 
