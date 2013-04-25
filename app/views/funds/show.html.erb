@@ -1,8 +1,8 @@
-
-<% if @fund_dates[0].present? %>
 <h1><%= @fund.name %></h1>
 
-<div>
+<% if @fund_dates[0].present? %>
+
+<div media="print">
 	<h2>Performance Comparison</h2>
 	<% if @new_funds_array.count <= 3 %>	
 		<table>
@@ -115,7 +115,7 @@
 		</table>
 	<% end %>
 
-	<div class="row" style="margin-left: 5%; margin-right:5%">
+	<div class="row noPrint" style="margin-left: 5%; margin-right:5%">
 		<div style="float:left">
 			<%= form_tag @fund, method: 'get' do %>
 				<div class="span2">
@@ -241,7 +241,22 @@
 	</table>
 </div>
 <% else %>
-	<h1><%= @fund.name %></h1>
+	<% if @fund_months.present? %>
+		<table>
+			<tr>
+				<th></th>
+				<% @fund_months.each do |m| %>
+					<td><%= m.mend.strftime("%b-%y") %></td>
+				<% end %>
+			</tr>
+			<tr>
+				<td><%= @fund.name %></td>
+				<% @fund_months.each do |m| %>
+					<td><%= number_to_percentage(m.fund_return * 100, precision: 2)%></td>
+				<% end %>
+			</tr>
+		</table>
+	<% end %>
 <% end %>
 
 <%= render 'show_admin_info' %>

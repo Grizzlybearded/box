@@ -1,5 +1,5 @@
-<fieldset>
-	<% if current_user.global_admin? %>
+<% if current_user.global_admin? %>
+	<fieldset>
 		<div>
 			<%= form_tag relationships_path do %>
 				<%= hidden_field_tag :fund_id, @fund.id %>
@@ -8,34 +8,31 @@
 				<%= submit_tag "Submit" %>
 			<% end %>
 		</div>
-	<% end %>
-	<div>
-		<% if @fund.investors.present? && current_user.global_admin? %>
-			<ul>
-				<% @fund.investors.order("name ASC").each do |f| %>
-					<li>
-						<%= link_to f.name, f %>
-						| <%= link_to 'Destroy', @fund.relationships.find_by_investor_id(f.id), method: :delete, data: {confirm: "Are you sure?"} %>
-					</li>
-				<% end %>
-			</ul>
-		<% end %>
-	</div>
-	<div>
-		<% if current_user.global_admin? %>
-			<div>Benchmarks are listed here.</div>
-			<div>
-				<% if @fund.benchmarks.present? %>
-					<ul>
-						<% @fund.benchmarks.each do |f| %>
-							<li>
-								<%= f.name %> | <%= link_to 'Destroy', @fund.trackers.find_by_benchmark_id(f.id), method: :delete, data: {confirm: "Are you sure?"} %>
-							</li>
-						<% end %>
-					</ul>
-				<% end %>
-			</div>
-
-		<% end %>
-	</div>
-</fieldset>
+		<div>
+			<% if @fund.investors.present? %>
+				<ul>
+					<% @fund.investors.order("name ASC").each do |f| %>
+						<li>
+							<%= link_to f.name, f %>
+							| <%= link_to 'Destroy', @fund.relationships.find_by_investor_id(f.id), method: :delete, data: {confirm: "Are you sure?"} %>
+						</li>
+					<% end %>
+				</ul>
+			<% end %>
+		</div>
+		<div>	
+		<div>Benchmarks are listed here.</div>
+		<div>
+			<% if @fund.benchmarks.present? %>
+				<ul>
+					<% @fund.benchmarks.each do |f| %>
+						<li>
+							<%= f.name %> | <%= link_to 'Destroy', @fund.trackers.find_by_benchmark_id(f.id), method: :delete, data: {confirm: "Are you sure?"} %>
+						</li>
+					<% end %>
+				</ul>
+			<% end %>
+		</div>
+		</div>
+	</fieldset>
+<% end %>

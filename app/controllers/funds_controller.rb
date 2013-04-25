@@ -56,7 +56,7 @@ before_filter :correct_investor_for_show, only: [:show]
 
 		#NEED TO INSTANTIATE FUNDS_ARRAY BEFORE HERE
 
-		if @fund_dates[0].present?
+		if @fund_dates[0].present? && (@fund.months.count >= 3)
 
 			#adjust the funds array to eliminate funds that have less than 3 dates or that don't have overlapping dates
 			@new_funds_array = adjust_funds_array(@funds_array)
@@ -100,7 +100,9 @@ before_filter :correct_investor_for_show, only: [:show]
 
 			# the monthly returns for a fund.  
 			@parent_array = Fund.monthly_returns(@fund)
-			
+
+		else #if the fund has less than three months
+			@fund_months = @fund.months
 		end 		
 	end
 
@@ -167,11 +169,15 @@ before_filter :correct_investor_for_show, only: [:show]
 		#store the funds that have the max date
 		@funds_with_date = Month.where(mend: @recent_date, fund_id: @fund_ids).map{|n| n.fund}.sort {|a,b| a.name <=> b.name}
 
-		#if (@funds_with_date.count / (@funds_array.count * 1.0)) <= 0.5
-		#	@recent_date = @recent_date.months_ago(1)
-		#	@funds_with_date = Month.where(mend: @recent_date, fund_id: @fund_ids).map{|n| n.fund}
-		#end
+		all_funds_count = @funds_array.count
 		
+		#if >= 50% of funds have this month, use this month.  else pick the month before.
+
+		if @funds_with_date.count / (all_funds_count*1.0) < 0.5
+			@recent_date = @recent_date.months_ago(1)
+			@funds_with_date = Month.where(mend: @recent_date, fund_id: @fund_ids).map{|n| n.fund}.sort {|a,b| a.name <=> b.name}
+		end
+
 		@removed_funds = @funds_array - @funds_with_date
 	end
 

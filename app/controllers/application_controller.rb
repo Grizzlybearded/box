@@ -1,6 +1,5 @@
 class ApplicationController < ActionController::Base
 	protect_from_forgery
 	include SessionsHelper
-	include FundsHelper
-	
+	include FundsHelper	
 end

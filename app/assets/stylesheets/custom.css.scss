@@ -16,6 +16,11 @@ html {
   overflow-y: scroll;
 }
 
+
+div {
+  .NoPrint {visibility:hidden; display:none;}
+}
+
 body {
   padding-top: 60px;
 }
@@ -89,6 +94,7 @@ footer {
   padding-top: 5px;
   border-top: 1px solid $grayMediumLight;
   color: $grayLight;
+  bottom: 0px;
   a {
     color: $gray;
     &:hover { 
@@ -198,6 +204,12 @@ table {
   border-radius: 3px;
   color: #333;
   margin-bottom: 10px;
+  page-break-inside:auto;
+}
+
+table tr {
+  page-break-inside:avoid; 
+  page-break-after:auto;
 }
 
 table td, table th {
@@ -230,9 +242,7 @@ submenu {
   padding-right: 10px;
   padding-left: 10px;
   margin-left: -23px;
-  li {
-    list-style-type: none;
-  }
+  li {list-style-type: none;}
 }
 
 /* fields */
@@ -288,7 +298,9 @@ button {
 }
 
 @media print {
+  width: 7.0in;
   .page-break { display: block; page-break-before: always; }
+  .noPrint { visibility:hidden; display:none; }
 }
 
 .ui-datepicker-calendar {
