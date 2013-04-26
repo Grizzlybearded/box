@@ -167,15 +167,15 @@ before_filter :correct_investor_for_show, only: [:show]
 		@recent_date = Month.where(fund_id: @fund_ids).maximum(:mend)
 
 		#store the funds that have the max date
-		@funds_with_date = Month.where(mend: @recent_date, fund_id: @fund_ids).map{|n| n.fund}.sort {|a,b| a.name <=> b.name}
+		@funds_with_max = Month.where(mend: @recent_date, fund_id: @fund_ids).map{|n| n.fund}.sort {|a,b| a.name <=> b.name}
 
 		all_funds_count = @funds_array.count
-		
-		#if >= 50% of funds have this month, use this month.  else pick the month before.
 
-		if @funds_with_date.count / (all_funds_count*1.0) < 0.5
+		if @funds_with_max.count / (all_funds_count*1.0) < 0.5
 			@recent_date = @recent_date.months_ago(1)
 			@funds_with_date = Month.where(mend: @recent_date, fund_id: @fund_ids).map{|n| n.fund}.sort {|a,b| a.name <=> b.name}
+		else
+			@funds_with_date = @funds_with_max
 		end
 
 		@removed_funds = @funds_array - @funds_with_date
