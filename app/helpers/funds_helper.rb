@@ -25,19 +25,23 @@
 
 		# find months of a benchmark where the fund_returns are positive.
 		# get the months in an array.  get those same months for the respective fund.
-		@start_end = start_end_dates(fund)
+		@ind_returns = Month.where(fund_id: index.id, mend: @start_end[0]..@start_end[1]).where("fund_return > ?", 0).pluck(:fund_return)
+		@mends =       Month.where(fund_id: index.id, mend: @start_end[0]..@start_end[1]).where("fund_return > ?", 0).pluck(:mend)
 
-		@ind_returns = Month.where(fund_id: index.id, mend: @start_end[0]..@start_end[1]).where("fund_return > ?", 0).pluck(:fund_return).map{|n| n/100.0}
-		@mends = Month.where(fund_id: index.id).where("fund_return > ?", 0).pluck(:mend)
+		#@mends has the months with positive returns
+		@fund_returns = Month.where(fund_id: fund.id, mend: @mends).pluck(:fund_return)
 
-		@fund_returns = Month.where(fund_id: fund.id, mend: @mends).pluck(:fund_return).map{|n| n / 100.0}
-
+		#change this to cumulative return and fix the '--'
 		if @ind_returns == []
-			@return_up_cap = '--'
+			@return_up_cap = nil
 		else
-			@return_up_cap = (@fund_returns == [] ? 0 : calc_ann_return(@fund_returns))/calc_ann_return(@ind_returns)
+			@return_up_cap = (@fund_returns == [] ? 0 : calc_ann_return(@fund_returns.map{|n| n / 100.0}))/
+				calc_ann_return(@ind_returns.map{|n| n / 100.0}) * 100
+			#@return_up_cap = (@fund_returns == [] ? 0 : @fund_returns.map{|n| n / 100.0 + 1}.inject{|product, n| product * n} - 1 )/(@ind_returns.map{|n| n/100.0 + 1}.inject{|product, n| product * n} - 1) * 100
 		end
 
+
+		#make sure to multiply by 100.  most other methods do this in the view
 		return @return_up_cap
 	end
 
@@ -48,19 +52,21 @@
 		else
 			@start_end = [start_date, end_date]
 		end
-		
 
-		@ind_returns = Month.where(fund_id: index.id, mend: @start_end[0]..@start_end[1]).where("fund_return < ?", 0).pluck(:fund_return).map{|n| n/100.0}
-		@mends = Month.where(fund_id: index.id).where("fund_return < ?", 0).pluck(:mend)
+		@ind_returns = Month.where(fund_id: index.id, mend: @start_end[0]..@start_end[1]).where("fund_return < ?", 0).pluck(:fund_return)
+		@mends = Month.where(fund_id: index.id, mend: @start_end[0]..@start_end[1]).where("fund_return < ?", 0).pluck(:mend)
 
-		@fund_returns = Month.where(fund_id: fund.id, mend: @mends).pluck(:fund_return).map{|n| n / 100.0}
+		@fund_returns = Month.where(fund_id: fund.id, mend: @mends).pluck(:fund_return)
 
 		if @ind_returns == []
-			@return_down_cap = '--'
+			@return_down_cap = nil
 		else
-			@return_down_cap = (@fund_returns == [] ? 0 : calc_ann_return(@fund_returns))/calc_ann_return(@ind_returns)
+			@return_down_cap = (@fund_returns == [] ? 0 : calc_ann_return(@fund_returns.map{|n| n / 100.0}))/
+				calc_ann_return(@ind_returns.map{|n| n / 100.0}) * 100
+			#@return_down_cap = (@fund_returns == [] ? 0 : @fund_returns.map{|n| n / 100.0 + 1}.inject{|product, n| product * n} - 1)/(@ind_returns.map{|n| n/100.0 + 1}.inject{|product, n| product * n} - 1) * 100
 		end
 
+		#make sure to multiply by 100.  most other methods do this in the view
 		return @return_down_cap
 	end
 

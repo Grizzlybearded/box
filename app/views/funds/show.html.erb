@@ -51,10 +51,20 @@
 						<td><%= number_to_percentage(alpha(@fund, f, @new_fund_dates[0], @new_fund_dates[1])*100.0, precision: 2) %></td>
 						<td><%= number_to_percentage(correlation(@fund, f, @new_fund_dates[0], @new_fund_dates[1])*100.0, precision: 2) %></td>
 						<td>
-							<%= number_to_percentage(up_capture(@fund,f, @new_fund_dates[0], @new_fund_dates[1])*100.0, precision: 2) %>
+							<% u_cap = up_capture(@fund,f, @new_fund_dates[0], @new_fund_dates[1]) %>
+							<% if u_cap.nil? %>	
+								<%= '--' %>
+							<% else %>
+								<%= number_to_percentage(u_cap, precision: 2) %>
+							<% end %>
 						</td>
 						<td>
-							<%= number_to_percentage(down_capture(@fund,f, @new_fund_dates[0], @new_fund_dates[1])*100.0, precision: 2) %>
+							<% d_cap = down_capture(@fund,f, @new_fund_dates[0], @new_fund_dates[1]) %>
+							<% if d_cap.nil? %>
+								<%= '--' %>
+							<% else %>
+								<%= number_to_percentage(d_cap, precision: 2) %>
+							<% end %>
 						</td>
 						<% if !@fund.trackers.where(user_id: nil).pluck(:benchmark_id).include?(f.id) %>
 							<td><%= link_to 'X', @fund.trackers.find_by_benchmark_id_and_user_id(f.id, current_user.id), method: :delete %></td>
@@ -165,11 +175,15 @@
 		</tr>
 		<% @perf_over_diff_periods.each do |f| %>
 			<tr>
-				<% f.each do |n| %>
-					<% if n.kind_of?(Fund) %>
-						<td><%= link_to n.name, n %></td>
+				<% for i in 0..9 %>
+					<% if f[i].present? %>
+						<% if f[i].kind_of?(Fund) %>
+							<td><%= link_to f[i].name, f[i] %></td>
+						<% else %>
+							<td><%= number_to_percentage(f[i]*100, precision: 2) %></td>
+						<% end %>
 					<% else %>
-						<td><%= number_to_percentage(n*100, precision: 2) %></td>
+						<td></td>
 					<% end %>
 				<% end %>
 			</tr>

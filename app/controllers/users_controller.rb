@@ -17,7 +17,6 @@ before_filter :same_investor, except: [:index, :new, :create]
 			@user.email == @user.invitation.recipient_email
 			if @user.save
 				UserMailer.new_user_mail(@user).deliver
-
 				redirect_to root_url, notice: "New user created!"
 			else
 				render 'new'
