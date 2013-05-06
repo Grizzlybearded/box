@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130317214902) do
+ActiveRecord::Schema.define(:version => 20130504221943) do
 
   create_table "funds", :force => true do |t|
     t.string   "name"
@@ -20,14 +20,16 @@ ActiveRecord::Schema.define(:version => 20130317214902) do
     t.string   "fund_type"
     t.boolean  "bmark",      :default => false
     t.boolean  "core_bmark", :default => false
+    t.boolean  "retired",    :default => false
   end
 
   add_index "funds", ["name"], :name => "index_funds_on_name", :unique => true
 
   create_table "investors", :force => true do |t|
     t.string   "name"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at",    :null => false
+    t.datetime "updated_at",    :null => false
+    t.integer  "invitation_id"
   end
 
   create_table "invitations", :force => true do |t|
@@ -35,8 +37,9 @@ ActiveRecord::Schema.define(:version => 20130317214902) do
     t.string   "recipient_email"
     t.string   "token"
     t.datetime "sent_at"
-    t.datetime "created_at",      :null => false
-    t.datetime "updated_at",      :null => false
+    t.datetime "created_at",                         :null => false
+    t.datetime "updated_at",                         :null => false
+    t.boolean  "invite_type",     :default => false
   end
 
   create_table "months", :force => true do |t|

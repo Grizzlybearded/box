@@ -4,6 +4,11 @@
 	<%= form_for @fund do |f| %>
 		<%= render 'shared/error_messages', object: f.object %>
 		<%= render 'shared/edit_fund_form', f: f %>
+
+		<%= f.label :retired, "Check to retire this fund" %>
+		<%= f.check_box :retired %><br />
+		<br />
+
 		<%= f.submit "Submit fund", class: "btn btn-large btn-primary" %>
 	<% end %>
 </fieldset>

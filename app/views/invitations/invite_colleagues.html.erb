@@ -1,0 +1,16 @@
+<h1>Invite a colleague to use HF Analyst</h1>
+
+<h2>
+	Note: this person should not work at your firm.
+ 	He/She will not be able to see your data.
+ </h2>
+
+<%= form_for @invitation, :url => invitations_path, :html => {:method => :post} do |f| %>
+	<fieldset>
+		<%= render 'shared/error_messages', object: f.object %>
+		<%= f.hidden_field :invite_type, value: true %>
+		<%= f.label :recipient_email, "Your colleague's email" %>
+		<%= f.text_field :recipient_email %>
+		<%= f.submit "Send", class: "btn btn-large btn-primary" %>
+	</fieldset>
+<% end %>

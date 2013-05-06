@@ -1,10 +1,12 @@
-<h1>Add someone from your firm</h1>
+<h1>Add someone to your firm</h1>
 
+<h2>Note: you will be sharing information about your funds with this person.</h2>
 <%= form_for @invitation do |f| %>
 	<fieldset>
 		<%= render 'shared/error_messages', object: f.object %>
 		<%= f.label :recipient_email, "Your colleague's email" %>
 		<%= f.text_field :recipient_email %>
+		<%= f.hidden_field :invite_type, value: false %>
 		<%= f.submit "Send", class: "btn btn-large btn-primary" %>
 	</fieldset>
 <% end %>

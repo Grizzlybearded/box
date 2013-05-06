@@ -12,18 +12,32 @@ before_filter :same_investor, except: [:index, :new, :create]
 
 	def create
 		@user = User.new(params[:user])
+
+
+		#do i need to validate that the invitation is real?  am i already doing that?
+
 		#before_filter :same investor won't work here so the test to ensure the same investor is done below
-		if @user.investor_id == User.find_by_id(@user.invitation.sender_id).investor_id &&
-			@user.email == @user.invitation.recipient_email
+		if @user.invitation.invite_type == false	
+			if @user.investor_id == User.find_by_id(@user.invitation.sender_id).investor_id &&
+				@user.email == @user.invitation.recipient_email
+				if @user.save
+					UserMailer.new_user_mail(@user).deliver
+					redirect_to root_url, notice: "New user created!"
+				else
+					render 'new'
+				end
+			else
+				flash[:notice] = "You can only create users that work at the same company as you."
+				redirect_to :back
+			end
+		elsif @user.invitation.invite_type == true
+			@user.investor_id = Investor.find_by_invitation_token(@user.invitation.token).id
 			if @user.save
 				UserMailer.new_user_mail(@user).deliver
 				redirect_to root_url, notice: "New user created!"
 			else
 				render 'new'
 			end
-		else
-			flash[:notice] = "You can only create users that work at the same company as you."
-			redirect_to :back
 		end
 	end
 

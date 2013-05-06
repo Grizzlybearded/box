@@ -2,7 +2,7 @@
 
 <div>
 	<% Fund::VALID_FUND_TYPES.each do |i| %>
-		<% if current_user.investor.funds.where(fund_type: i, bmark:false).present? %>	
+		<% if current_user.investor.funds.where(fund_type: i, bmark:false, retired: false).present? %>	
 			<h2><%= i %></h2>
 			<table style="width:55%; margin-bottom:30px">
 					<tr>
@@ -11,7 +11,7 @@
 						<th>Edit Returns</th>
 						<th>Delete Fund</th>
 					</tr>
-				<% current_user.investor.funds.where(fund_type: i, bmark: false).order("name").each do |f| %>
+				<% current_user.investor.funds.where(fund_type: i, bmark: false, retired: false).order("name").each do |f| %>
 					<tr>
 						<td style="width:250px; text-align:left"><%= link_to f.name, f %></td>
 						<td><%= link_to 'Edit', edit_fund_path(f) %></td>

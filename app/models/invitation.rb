@@ -1,12 +1,15 @@
 class Invitation < ActiveRecord::Base
-  attr_accessible :recipient_email, :sender_id, :sent_at, :token
+  attr_accessible :recipient_email, :sender_id, :sent_at, :token, :invite_type
+  attr_readonly :invite_type, :sender_id, :recipient_email, :token
 
   belongs_to :sender, class_name: 'User'
   has_one :recipient, class_name: 'User'
+  has_one :investor
 
   validates_presence_of :recipient_email
   validates_presence_of :sender
   validate :recipient_is_not_registered
+  validates_inclusion_of :invite_type, :in => [true, false]
 
   before_create :generate_token
 

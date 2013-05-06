@@ -3,6 +3,28 @@
 <fieldset>
 	<%= form_for @investor do |f| %>
 		<%= render 'shared/error_messages', object: f.object %>
-		<%= render 'shared/investor_form', f: f %>
+		
+		<%= f.hidden_field :invitation_token %>		
+		
+		<%= f.label :name, "Firm Name" %>
+		<%= f.text_field :name %>
+		
+		<%= f.fields_for :users do |u| %>
+			<%= u.hidden_field :invitation_token %>
+
+			<%= u.label :name, "User Name" %>
+			<%= u.text_field :name %>
+
+			<%= u.label :email %>
+			<%= u.text_field :email %>
+
+			<%= u.label :password %>
+			<%= u.password_field :password %>
+
+			<%= u.label :password_confirmation %>
+			<%= u.password_field :password_confirmation %>
+		<% end %>
+
+		<%= f.submit "Submit Investor", class: "btn btn-large btn-primary" %>
 	<% end %>
 </fieldset>

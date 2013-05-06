@@ -1,21 +1,112 @@
-<h1>Last 12 months - Returns and Beta to ACWI. Data is through <%= @last_month.strftime("%b-%y") %>.</h1>
+<h1>Returns and Beta to ACWI: last 12 months through <%= @last_month.strftime("%b-%y") %>.</h1>
 
 <h2>Dig into your funds deeper <%= link_to 'here', @root_url %>.</h2>
 
-<table>
-	<tr>
-		<th>Fund</th>
-		<th>Beta - Last 12 months</th>
-		<th>Return - Last 12 months</th>
+<table style="margin: 0 auto;
+	  border: 1px solid #DFDFDF;
+	  background-color: #F9F9F9;
+	  width: 90%;
+	  -moz-border-radius: 3px;
+	  -webkit-border-radius: 3px;
+	  border-radius: 3px;
+	  color: #333;
+	  margin-bottom: 10px;
+	  page-break-inside:auto;">
+	<tr style="page-break-inside:avoid; 
+	  page-break-after:auto;">
+		<th style="border-top-color: white;
+	  border-bottom: 1px solid #DFDFDF;
+	  color: #555; 
+	  text-shadow: rgba(255, 255, 255, 0.796875) 0px 1px 0px;
+	  font-weight: normal;
+	  padding: 7px 7px 8px;
+	  text-align: center;
+	  line-height: 1.3em;
+	  font-size: 14px;">Fund</th>
+		<th style="border-top-color: white;
+	  border-bottom: 1px solid #DFDFDF;
+	  color: #555;
+	  text-shadow: rgba(255, 255, 255, 0.796875) 0px 1px 0px;
+	  font-weight: normal;
+	  padding: 7px 7px 8px;
+	  text-align: center;
+	  line-height: 1.3em;
+	  font-size: 14px;">Beta - Last 12 months</th>
+		<th style="border-top-color: white;
+	  border-bottom: 1px solid #DFDFDF;
+	  color: #555; 
+	  text-shadow: rgba(255, 255, 255, 0.796875) 0px 1px 0px;
+	  font-weight: normal;
+	  padding: 7px 7px 8px;
+	  text-align: center;
+	  line-height: 1.3em;
+	  font-size: 14px;">Return - Last 12 months</th>
 	</tr>
 	<% @funds.each do |f| %>
 		<% if f.months.pluck(:mend).include?(@last_month) && 
 			f.months.pluck(:mend).include?(@last_month.months_ago(11)) %>
-			<tr>
-				<td><%= f.name %></td>
-				<td><%= number_with_precision(beta(f, @acwi, @last_month.months_ago(11), @last_month), precision: 2) %></td>
-				<td><%= number_to_percentage(ann_return_by_date(f, @last_month.months_ago(11), @last_month)*100.0, precision: 2) %></td>
+			<tr style="page-break-inside:avoid; 
+	  			page-break-after:auto;">
+				<td style="border-top-color: white;
+	  				border-bottom: 1px solid #DFDFDF;
+	  				color: #555;
+	  				padding: 4px 7px 2px;
+	  				vertical-align: top;
+	  				text-align: left;"><%= f.name %></td>
+				<td style="border-top-color: white;
+	  				border-bottom: 1px solid #DFDFDF;
+	  				color: #555;
+	  				padding: 4px 7px 2px;
+	  				vertical-align: top;
+	  				text-align: center;"><%= number_with_precision(beta(f, @acwi, @last_month.months_ago(11), @last_month), precision: 2) %></td>
+				<td style="border-top-color: white;
+	  				border-bottom: 1px solid #DFDFDF;
+	  				color: #555;
+	  				padding: 4px 7px 2px;
+	  				vertical-align: top;
+	  				text-align: center;"><%= number_to_percentage(ann_return_by_date(f, @last_month.months_ago(11), @last_month)*100.0, precision: 2) %></td>
 			</tr>
 		<% end %>
 	<% end %>
 </table>
+
+<style type="text/css">
+	table {
+	  margin: 0 auto;
+	  border: 1px solid #DFDFDF;
+	  background-color: #F9F9F9;
+	  width: 90%;
+	  -moz-border-radius: 3px;
+	  -webkit-border-radius: 3px;
+	  border-radius: 3px;
+	  color: #333;
+	  margin-bottom: 10px;
+	  page-break-inside:auto;
+	}
+
+	table tr {
+	  page-break-inside:avoid; 
+	  page-break-after:auto;
+	}
+
+	table td, table th {
+	  border-top-color: white;
+	  border-bottom: 1px solid #DFDFDF;
+	  color: #555;
+	}
+
+	table th {
+	  text-shadow: rgba(255, 255, 255, 0.796875) 0px 1px 0px;
+	  font-weight: normal;
+	  padding: 7px 7px 8px;
+	  text-align: center;
+	  line-height: 1.3em;
+	  font-size: 14px;
+	}
+
+	table td {
+	  padding: 4px 7px 2px;
+	  vertical-align: top;
+	  text-align: center;
+	}
+</style>

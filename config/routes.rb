@@ -16,7 +16,11 @@ Box::Application.routes.draw do
 
   match '/signup/:invitation_token', to: 'users#new', as: 'signup'
   match '/highwater_mark', to: 'funds#highwater_mark'
+  match '/retired_funds', to: 'funds#retired_funds'
   match '/login', to: 'sessions#new'
+
+  match '/invite_colleagues', to: 'invitations#invite_colleagues'
+  match '/investor_signup/:invitation_token', to: 'investors#new', as: 'investor_signup'
 
   root to: 'funds#recent_returns'
 

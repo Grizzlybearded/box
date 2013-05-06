@@ -1,6 +1,6 @@
 class FundsController < ApplicationController
 before_filter :authorize_user
-before_filter :correct_investor, except: [:show, :recent_returns, :highwater_mark, :index, :new, :create]
+before_filter :correct_investor, except: [:show, :recent_returns, :highwater_mark, :retired_funds, :index, :new, :create]
 before_filter :correct_investor_for_show, only: [:show]
 
 #this before filter is redundant
@@ -32,8 +32,8 @@ before_filter :correct_investor_for_show, only: [:show]
 	end
 
 	def index
-		@funds = current_user.investor.funds.where(bmark: false).order("fund_type")
-		@indices = current_user.investor.funds.where(bmark: true).order("name")
+		#@funds = current_user.investor.funds.where(bmark: false, retired: false).order("fund_type")
+		@indices = current_user.investor.funds.where(bmark: true, retired: false).order("name")
 	end
 
 	def show
@@ -157,11 +157,11 @@ before_filter :correct_investor_for_show, only: [:show]
 	end
 
 	def highwater_mark
-		@funds_array = current_user.investor.funds.where(bmark: false).order("name")
+		@funds_array = current_user.investor.funds.where(bmark: false, retired: false).order("name")
 	end
 
 	def recent_returns
-		@funds_array = current_user.investor.funds.where(bmark: false)
+		@funds_array = current_user.investor.funds.where(bmark: false, retired: false)
 		@fund_ids = @funds_array.map {|n| n.id}
 
 		@recent_date = Month.where(fund_id: @fund_ids).maximum(:mend)
@@ -179,6 +179,10 @@ before_filter :correct_investor_for_show, only: [:show]
 		end
 
 		@removed_funds = @funds_array - @funds_with_date
+	end
+
+	def retired_funds
+		@funds = current_user.investor.funds.where(retired: true).order("name")
 	end
 
 	private

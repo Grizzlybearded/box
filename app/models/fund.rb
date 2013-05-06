@@ -1,5 +1,5 @@
 class Fund < ActiveRecord::Base
-  attr_accessible :name, :months_attributes, :fund_type, :bmark, :trackers_attributes
+  attr_accessible :name, :months_attributes, :fund_type, :bmark, :trackers_attributes, :retired
   validates :name, presence: true
 
   VALID_FUND_TYPES = ['Emerging Markets', 'Equity L/S', 
@@ -8,7 +8,7 @@ class Fund < ActiveRecord::Base
     'Multi-Strategy',]
 
   validates :name, uniqueness: true
-
+  validates_inclusion_of :retired, :in => [true,false]
   validates :fund_type,
   	inclusion: { :in => VALID_FUND_TYPES,
   	message: "%{value} is not a valid fund type" },

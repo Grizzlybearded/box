@@ -1,0 +1,18 @@
+<h1>Retired Funds</h1>
+
+<table style="width:55%">
+	<tr>
+		<td>Fund</td>
+		<td>Edit</td>
+		<td>Edit Returns</td>
+		<td>Delete Fund</td>
+	</tr>
+	<% @funds.each do |f| %>
+		<tr>
+			<td><%= link_to f.name, f %></td>
+			<td><%= link_to 'Edit', edit_fund_path(f) %></td>
+			<td><%= link_to 'Edit Returns', months_edit_for_fund_path(f) %></td>
+			<td><%= link_to 'Delete', f, method: :delete, data: {confirm: "Are you sure?"} %></td>
+		</tr>
+	<% end %>
+</table>
