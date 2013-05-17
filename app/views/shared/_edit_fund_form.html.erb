@@ -3,11 +3,10 @@
 
 <%= f.label :fund_type, "Fund Type" %>
 <%= f.select :fund_type, Fund::VALID_FUND_TYPES, {:include_blank => true, :default => nil} %>
+
 <div style="padding-bottom:5px">Default Benchmarks</div>
 <%= f.fields_for :trackers, @trackers do |default_trackers| %>
-	<% if %>
-		<%= default_trackers.collection_select :benchmark_id, @benchmarks_for_select, :id, :name %>
-	<% end %>	
+	<%= default_trackers.collection_select :benchmark_id, @benchmarks_for_select, :id, :name %>
 <% end %>
 
 <%= f.label :bmark, "Check if index" %>

@@ -19,7 +19,7 @@
 		<li style="margin-left:10px"><%= link_to_unless_current 'Funds', funds_path %><li>
 		<li style="margin-left:10px"><%= link_to_unless_current "Create new fund", new_fund_path %></li>
 		<li style="margin-left:10px"><%= link_to_unless_current 'Import returns', new_import_return_path %><li>
-		<li style="margin-left:10px"><%= link_to_unless_current 'Retired Funds', retired_funds_path %><li>
+		<li style="margin-left:10px"><%= link_to_unless_current 'Archived Funds', retired_funds_path %><li>
 		<li><%= "Manage #{current_user.investor.name}" %></li>
 		<li style="margin-left:10px"><%= link_to_unless_current "#{current_user.investor.name}", current_user.investor %><li>
 		<li style="margin-left:10px"><%= link_to_unless_current "Invite Colleague", invite_colleagues_path %><li>

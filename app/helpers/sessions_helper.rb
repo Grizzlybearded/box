@@ -9,7 +9,10 @@ module SessionsHelper
 	end
 
 	def authorize_user
-		redirect_to login_url, alert: "Please sign in" if current_user.nil?
+		unless signed_in?
+			store_location
+			redirect_to login_url, alert: "Please sign in"
+		end
 	end
 	
 	def authorize_ga
@@ -19,4 +22,14 @@ module SessionsHelper
 	def signed_in?
 		!current_user.nil?
  	end
+
+ 	def redirect_back_or(default)
+    	redirect_to(session[:return_to] || default)
+    	session.delete(:return_to)
+    	flash[:notice] = "Logged in!"
+  	end
+
+  	def store_location
+    	session[:return_to] = request.url
+  	end
 end
