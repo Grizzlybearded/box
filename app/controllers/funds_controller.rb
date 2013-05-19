@@ -24,6 +24,12 @@ before_filter :correct_investor_for_show, only: [:show]
 			@fund.trackers.build(benchmark_id: @fund_benchmarks[0], user_id: nil).save
 			@fund.trackers.build(benchmark_id: @fund_benchmarks[1], user_id: nil).save
 			current_user.investor.relationships.build(fund_id: @fund.id).save
+
+			#email to the rest of the users if not a fund
+			if @fund.bmark == false
+				UserMailer.new_fund_created(current_user, @fund).deliver
+			end
+
 			flash[:success] = "New fund created"
 			redirect_to new_import_return_path
 		else

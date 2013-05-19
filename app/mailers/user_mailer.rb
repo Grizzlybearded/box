@@ -36,6 +36,12 @@ class UserMailer < ActionMailer::Base
     mail to: @user.investor.users.pluck(:email), subject: "Data uploaded for #{@fund.name}"
   end
 
+  def new_fund_created(user, fund)
+    @user = user
+    @fund = fund
+    mail to: @user.investor.users.pluck(:email), subject: "New #{@fund.fund_type} fund created!"
+  end
+
   def beta_email(user)
     @user = user
     @funds = @user.investor.funds.where(retired: false).order("name").includes(:months)

@@ -8,7 +8,7 @@ before_filter :authorize_user
   def create
   	@import_return = ImportReturn.new(params[:import_return])
   	if @import_return.save(current_user.investor)
-  		redirect_to funds_path, notice: "Returns imported successfully."
+  		redirect_to root_path, notice: "Returns imported successfully."
   	else
   		render 'new'
   	end
