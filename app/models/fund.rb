@@ -18,6 +18,7 @@ class Fund < ActiveRecord::Base
   has_many :relationships, dependent: :destroy
   has_many :investors, through: :relationships
 
+  require 'matrix'
   #
   #
   #limit the number of trackers to two with a validation
@@ -236,6 +237,89 @@ class Fund < ActiveRecord::Base
 
       return @parent_array
   end
+
+
+  def self.correlation_table(funds = [], start_date, end_date)
+    # input is an array of funds
+    # get an array of months for each fund. store in an array
+    # have 2 for loops running through the array calling correlation on each and saving it in a different array or arrays
+
+    #array of each funds' months
+    array_of_months = []
+    
+    funds.each do |f|
+      array_of_months << get_returns(f, start_date, end_date)
+    end
+    
+    child_array = []
+    parent_array = []
+
+    (0..(funds.count - 1)).each do |i|
+      (0..(funds.count - 1)).each do |j|
+        child_array[j] = correlation(array_of_months[i], array_of_months[j])
+      end
+      parent_array << child_array.unshift(funds[i])
+      child_array = []
+    end
+
+    return parent_array
+  end
+
+
+  #have correlation take an array of months.
+  #input the months into each of the subsequent methods
+
+
+  def self.correlation(fund_one = [], fund_two = [])
+    covariance(fund_one, fund_two) / (st_dev(fund_one) * st_dev(fund_two))
+  end
+  # use correlation, covariance, variance, stdev, get returns
+
+  def self.covariance(fund_one = [], fund_two = [])
+    @fund_one = fund_one
+    @fund_two = fund_two
+
+    @one_ave = average(@fund_one)
+    @two_ave = average(@fund_two)
+
+    @one_diff = @fund_one.map{|n| n - @one_ave}
+    @two_diff = @fund_two.map{|n| n - @two_ave}
+
+    @one_vec = Matrix.row_vector(@one_diff)
+    @two_vec = Matrix.column_vector(@two_diff)
+
+    @final = (@one_vec * @two_vec) / (@one_vec.count*1.0)
+
+    return @final.to_a[0][0]
+  end
+
+  def self.variance(fund = [])
+    # do not use for less than 12 months???????
+    @returns = fund
+    @average = @returns.inject{|sum, x| sum + x}/@returns.count
+    @sum_of_diffs_squared = @returns.map{|n| ((n - @average)**2)}.inject{|sum,m| sum + m}
+    @variance = (@sum_of_diffs_squared/(@returns.count))
+  end
+
+  def self.st_dev(fund = [])
+    @variance = variance(fund)
+    @stdev = Math.sqrt(@variance)
+    #not converted for percentages
+  end
+
+  def self.average(months = [])
+    months.inject{|sum, n| sum + n}/months.count
+  end
+
+
+
+
+
+
+
+
+
+
 
 
 

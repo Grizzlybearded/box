@@ -91,6 +91,9 @@ before_filter :correct_investor_for_show, only: [:show]
 				@ykeys_for_chart[i] = "fund_#{i}"
 			end
 
+			#correlation table
+			@correlation_table = Fund.correlation_table(@new_funds_array, @new_fund_dates[0], @new_fund_dates[1])
+
 			# header for table and below that, months in the past to calculate returns for that table
 			@perf_header = ["1m", "3m", "6m", "1yr", "2yr", "3yr", "5yr", "7yr", "10yr"]
 			@perf_over_diff_periods = Fund.perf_over_diff_periods(@new_funds_array,@new_fund_dates[1])
@@ -98,12 +101,12 @@ before_filter :correct_investor_for_show, only: [:show]
 			@years_header = Fund.years_header(@new_fund_dates[1])
 			@all_funds_and_years = Fund.all_funds_and_years(@new_funds_array, @new_fund_dates)
 
-			# the monthly returns for a fund.  
+			# the monthly returns for a fund.
 			@parent_array = Fund.monthly_returns(@fund)
 
 		else #if the fund has less than three months
 			@fund_months = @fund.months
-		end 		
+		end
 	end
 
 	def edit

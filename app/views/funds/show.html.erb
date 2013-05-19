@@ -164,6 +164,32 @@
 		<%= content_tag :div, "", id: ("cumulative_return_chart"), data: {months: @chart_arr, names: @new_fund_names, keys: @ykeys_for_chart} %>
 	</fieldset><br/>
 
+	<h2>Correlation Table</h2>
+	<table>
+		<tr>
+			<th>
+			</th>
+			<% @new_funds_array.each do |f| %>
+				<th><%= link_to f.name, f %></th>
+			<% end %>
+		</tr>
+
+		<% @correlation_table.each do |i| %>
+			<tr>
+				<% i.each do |j| %>	
+				
+					<% if j.kind_of?(Fund) %>
+						<td><%= link_to j.name, j %></td>
+					<% else %>
+						<td>
+							<%= number_to_percentage(j*100, precision: 2) %>
+						</td>
+					<% end %>
+				<% end %>
+			</tr>
+		<% end %>
+	</table></br>
+
 	<h2>Performance Comparison Over Time Periods</h2>
 	<table>
 		<caption align="bottom">All returns longer than 1 year are annualized.  The most recent month is <%= @new_fund_dates[1].strftime("%b-%y") %>.</caption>
