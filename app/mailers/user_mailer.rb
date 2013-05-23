@@ -39,7 +39,8 @@ class UserMailer < ActionMailer::Base
   def new_fund_created(user, fund)
     @user = user
     @fund = fund
-    mail to: @user.investor.users.pluck(:email), subject: "New #{@fund.fund_type} fund created!"
+    @fund_url = fund_url(@fund)
+    mail to: @user.investor.users.pluck(:email), subject: "New #{@fund.fund_type.downcase} fund created"
   end
 
   def beta_email(user)

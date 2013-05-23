@@ -1,4 +1,4 @@
-<h1>New Fund Created!</h1>
+<h1>New Fund Created</h1>
 
 <p>Hello,</p>
-<p>Someone at your firm just uploaded a new <%= @fund.fund_type %> Fund. Check it out <%= link_to 'here', @fund %>.</p>
+<p>Someone at your firm just created a new <%= @fund.fund_type.downcase %> fund. Check it out <%= link_to 'here', @fund_url %>.</p>
