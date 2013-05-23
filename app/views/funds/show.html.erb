@@ -280,23 +280,23 @@
 		<% end %>
 	</table>
 </div>
+<% elsif @fund_months.present? %>
+	<table>
+		<tr>
+			<th></th>
+			<% @fund_months.each do |m| %>
+				<td><%= m.mend.strftime("%b-%y") %></td>
+			<% end %>
+		</tr>
+		<tr>
+			<td><%= @fund.name %></td>
+			<% @fund_months.each do |m| %>
+				<td><%= number_to_percentage(m.fund_return * 100, precision: 2)%></td>
+			<% end %>
+		</tr>
+	</table>
 <% else %>
-	<% if @fund_months.present? %>
-		<table>
-			<tr>
-				<th></th>
-				<% @fund_months.each do |m| %>
-					<td><%= m.mend.strftime("%b-%y") %></td>
-				<% end %>
-			</tr>
-			<tr>
-				<td><%= @fund.name %></td>
-				<% @fund_months.each do |m| %>
-					<td><%= number_to_percentage(m.fund_return * 100, precision: 2)%></td>
-				<% end %>
-			</tr>
-		</table>
-	<% end %>
+	<h2>Data is still being uploaded for this fund. Check back shortly.</h2>
 <% end %>
 
 <%= render 'show_admin_info' %>
