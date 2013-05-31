@@ -11,6 +11,7 @@ Box::Application.routes.draw do
   resources :funds do
     member do
       get :months_edit_for
+      put :toggle_archive
     end
   end
 

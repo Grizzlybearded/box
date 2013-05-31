@@ -88,7 +88,7 @@ before_filter :correct_investor_for_show, only: [:show]
 			@removed_funds = @funds_array - @new_funds_array
 
 			# THIS WILL NEED TO BE CHANGED WHEN THE INVESTOR SETTINGS ARE CHANGED
-			@arr_for_benchmark_autocomplete = @current_user.investor.funds.pluck(:name) - @funds_array.map{|f| f.name}
+			@arr_for_benchmark_autocomplete = @current_user.investor.funds.where(:retired => false).pluck(:name) - @funds_array.map{|f| f.name}
 
 			# FIX THE CHART SO IT CAN HAVE VARIABLE INPUTS
 			@ykeys_for_chart = []
@@ -151,16 +151,21 @@ before_filter :correct_investor_for_show, only: [:show]
 
 	def destroy
 		@fund = Fund.find(params[:id])
-		if @fund.core_bmark == false
-			@fund.destroy
-			flash[:success] = "Fund deleted"
-			redirect_to funds_path
-		elsif @fund.core_bmark? && current_user.global_admin?
-			@fund.destroy
-			flash[:success] = "Fund deleted"
-			redirect_to funds_path
+		if @fund.starter_fund == false
+			if @fund.core_bmark == false
+				@fund.destroy
+				flash[:success] = "Fund deleted"
+				redirect_to funds_path
+			elsif @fund.core_bmark? && current_user.global_admin?
+				@fund.destroy
+				flash[:success] = "Fund deleted"
+				redirect_to funds_path
+			else
+				flash[:notice] = "This benchmark cannot be deleted"
+				redirect_to funds_path
+			end
 		else
-			flash[:notice] = "This benchmark cannot be deleted"
+			flash[:notice] = "This fund cannot be deleted."
 			redirect_to funds_path
 		end
 	end
@@ -192,6 +197,17 @@ before_filter :correct_investor_for_show, only: [:show]
 
 	def retired_funds
 		@funds = current_user.investor.funds.where(retired: true).order("name")
+	end
+
+	def toggle_archive
+		@fund = Fund.find(params[:id])
+		@fund.toggle!(:retired)
+		if @fund.retired == true
+			flash[:success] = "You archived a fund!  See archived funds by clicking on the link on the left navigation."
+		else
+			flash[:success] = "You unarchived a fund!" 
+		end
+		redirect_to :back 
 	end
 
 	private

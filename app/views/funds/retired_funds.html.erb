@@ -1,18 +1,28 @@
-<h1>Retired Funds</h1>
+<h1>Archived Funds</h1>
 
-<table style="width:55%">
-	<tr>
-		<td>Fund</td>
-		<td>Edit</td>
-		<td>Edit Returns</td>
-		<td>Delete Fund</td>
-	</tr>
-	<% @funds.each do |f| %>
+<% if @funds.present?%>
+	<table style="width:65%">
 		<tr>
-			<td><%= link_to f.name, f %></td>
-			<td><%= link_to 'Edit', edit_fund_path(f) %></td>
-			<td><%= link_to 'Edit Returns', months_edit_for_fund_path(f) %></td>
-			<td><%= link_to 'Delete', f, method: :delete, data: {confirm: "Are you sure?"} %></td>
+			<td>Fund</td>
+			<td>Edit</td>
+			<td>Edit Returns</td>
+			<td>Un-Archive</td>
+			<td>Delete Fund</td>
 		</tr>
-	<% end %>
-</table>
+		<% @funds.each do |f| %>
+			<tr>
+				<td><%= link_to f.name, f %></td>
+				<td><%= link_to 'Edit', edit_fund_path(f) %></td>
+				<td><%= link_to 'Edit Returns', months_edit_for_fund_path(f) %></td>
+				<td><%= link_to 'Un-Archive', toggle_archive_fund_path(f), :method => :put %></td>
+				<% if f.starter_fund? %>
+					<td>--</td>
+				<% else %>
+					<td><%= link_to 'Delete', f, method: :delete, data: {confirm: "Are you sure?"} %></td>
+				<% end %>
+			</tr>
+		<% end %>
+	</table>
+<% else %>
+	<h2>There are no archived funds</h2>
+<% end %>

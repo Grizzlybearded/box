@@ -2,20 +2,22 @@
 
 <div>
 	<% Fund::VALID_FUND_TYPES.each do |i| %>
-		<% if current_user.investor.funds.where(fund_type: i, bmark:false, retired: false).present? %>	
+		<% if current_user.investor.funds.where(fund_type: i, bmark:false, retired: false, starter_fund: false).present? %>	
 			<h2><%= i %></h2>
-			<table style="width:55%; margin-bottom:30px">
+			<table style="width:65%; margin-bottom:30px">
 					<tr>
 						<th>Fund</th>
 						<th>Edit Fund</th>
 						<th>Edit Returns</th>
+						<th>Archive</th>
 						<th>Delete Fund</th>
 					</tr>
-				<% current_user.investor.funds.where(fund_type: i, bmark: false, retired: false).order("name").each do |f| %>
+				<% current_user.investor.funds.where(fund_type: i, bmark: false, retired: false, starter_fund: false).order("name").each do |f| %>
 					<tr>
-						<td style="width:250px; text-align:left"><%= link_to f.name, f %></td>
+						<td style="width:200px; text-align:left"><%= link_to f.name, f %></td>
 						<td><%= link_to 'Edit', edit_fund_path(f) %></td>
 						<td><%= link_to 'Edit Returns', months_edit_for_fund_path(f) %></td>
+						<td><%= link_to 'Archive', toggle_archive_fund_path(f), :method => :put %></td>
 						<td><%= link_to 'Delete', f, method: :delete, data: {confirm: "Are you sure?"} %></td>
 					</tr>
 				<% end %>
@@ -24,9 +26,30 @@
 	<% end %>
 </div>
 
+<% if current_user.investor.funds.where(starter_fund: true, retired: false).present? %>
+	<h2>Starter Funds</h2>
+	<table style="width:65%; margin-bottom:30px">
+			<tr>
+				<th>Fund</th>
+				<th>Edit Fund</th>
+				<th>Edit Returns</th>
+				<th>Archive</th>
+				<th>Delete Fund</th>
+			</tr>
+		<% current_user.investor.funds.where(starter_fund: true, retired: false).order("name").each do |f| %>
+			<tr>
+				<td style="width:200px; text-align:left"><%= link_to f.name, f %></td>
+				<td>--</td>
+				<td>--</td>
+				<td><%= link_to 'Archive', toggle_archive_fund_path(f), :method => :put %></td>
+				<td>--</td>
+			</tr>
+		<% end %>
+	</table>
+<% end %>
 
 <h2>Indices</h2>
-<table style="width:55%">
+<table style="width:65%">
 	<tr>
 		<th>Index</th>
 		<th>Edit Index</th>

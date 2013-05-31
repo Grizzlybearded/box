@@ -11,16 +11,17 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130504221943) do
+ActiveRecord::Schema.define(:version => 20130531022959) do
 
   create_table "funds", :force => true do |t|
     t.string   "name"
-    t.datetime "created_at",                    :null => false
-    t.datetime "updated_at",                    :null => false
+    t.datetime "created_at",                      :null => false
+    t.datetime "updated_at",                      :null => false
     t.string   "fund_type"
-    t.boolean  "bmark",      :default => false
-    t.boolean  "core_bmark", :default => false
-    t.boolean  "retired",    :default => false
+    t.boolean  "bmark",        :default => false
+    t.boolean  "core_bmark",   :default => false
+    t.boolean  "retired",      :default => false
+    t.boolean  "starter_fund", :default => false
   end
 
   add_index "funds", ["name"], :name => "index_funds_on_name", :unique => true
@@ -70,12 +71,14 @@ ActiveRecord::Schema.define(:version => 20130504221943) do
   create_table "users", :force => true do |t|
     t.string   "email"
     t.string   "password_digest"
-    t.datetime "created_at",                         :null => false
-    t.datetime "updated_at",                         :null => false
+    t.datetime "created_at",                                :null => false
+    t.datetime "updated_at",                                :null => false
     t.string   "name"
-    t.boolean  "global_admin",    :default => false
+    t.boolean  "global_admin",           :default => false
     t.integer  "investor_id"
     t.integer  "invitation_id"
+    t.string   "password_reset_token"
+    t.datetime "password_reset_sent_at"
   end
 
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true

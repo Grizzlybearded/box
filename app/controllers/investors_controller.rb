@@ -22,6 +22,11 @@ class InvestorsController < ApplicationController
           f.relationships.build(investor_id: @investor.id).save
         end
 
+        #subscribe to all the starter funds
+        Fund.where(starter_fund: false).each do |f|
+          f.relationships.build(investor_id: @investor.id).save
+        end
+
     		flash[:success] = "New investor created!"
     		redirect_to investors_path
     	else

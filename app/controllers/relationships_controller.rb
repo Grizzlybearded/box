@@ -19,5 +19,4 @@ before_filter :authorize_ga
 		flash[:success] = "Investor removed from fund."
 		redirect_to :back
 	end
-
 end
