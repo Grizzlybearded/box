@@ -27,7 +27,7 @@
 </div>
 
 <% if current_user.investor.funds.where(starter_fund: true, retired: false).present? %>
-	<h2>Starter Funds</h2>
+	<h2>Starter Funds - These Funds Came Preloaded</h2>
 	<table style="width:65%; margin-bottom:30px">
 			<tr>
 				<th>Fund</th>
@@ -41,8 +41,8 @@
 				<td style="width:200px; text-align:left"><%= link_to f.name, f %></td>
 				<td>--</td>
 				<td>--</td>
-				<td><%= link_to 'Archive', toggle_archive_fund_path(f), :method => :put %></td>
 				<td>--</td>
+				<td><%= link_to 'Delete', f.relationships.find_by_investor_id(current_user.investor.id), method: :delete, data: {confirm: "Are you sure?"} %></td>
 			</tr>
 		<% end %>
 	</table>

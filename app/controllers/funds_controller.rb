@@ -2,6 +2,7 @@ class FundsController < ApplicationController
 before_filter :authorize_user
 before_filter :correct_investor, except: [:show, :recent_returns, :highwater_mark, :retired_funds, :index, :new, :create]
 before_filter :correct_investor_for_show, only: [:show]
+before_filter :protect_starter_funds, only: [:edit, :update, :destroy, :months_edit_for, :toggle_archive]
 
 #this before filter is redundant
 #before_filter :is_core_bmark, only: [:edit, :update, :destroy, :months_edit_for]
@@ -151,21 +152,16 @@ before_filter :correct_investor_for_show, only: [:show]
 
 	def destroy
 		@fund = Fund.find(params[:id])
-		if @fund.starter_fund == false
-			if @fund.core_bmark == false
-				@fund.destroy
-				flash[:success] = "Fund deleted"
-				redirect_to funds_path
-			elsif @fund.core_bmark? && current_user.global_admin?
-				@fund.destroy
-				flash[:success] = "Fund deleted"
-				redirect_to funds_path
-			else
-				flash[:notice] = "This benchmark cannot be deleted"
-				redirect_to funds_path
-			end
+		if @fund.core_bmark == false
+			@fund.destroy
+			flash[:success] = "Fund deleted"
+			redirect_to funds_path
+		elsif @fund.core_bmark? && current_user.global_admin?
+			@fund.destroy
+			flash[:success] = "Fund deleted"
+			redirect_to funds_path
 		else
-			flash[:notice] = "This fund cannot be deleted."
+			flash[:notice] = "This benchmark cannot be deleted"
 			redirect_to funds_path
 		end
 	end
@@ -219,6 +215,11 @@ before_filter :correct_investor_for_show, only: [:show]
 		def correct_investor
 			@fund = Fund.find(params[:id])
 			redirect_to root_path unless current_user.investor.funds.where(core_bmark: false).include?(@fund) || current_user.global_admin?
+		end
+
+		def protect_starter_funds
+			@fund = Fund.find(params[:id])
+			redirect_to funds_path unless @fund.starter_fund == false || current_user.global_admin?
 		end
 
 		#def is_core_bmark

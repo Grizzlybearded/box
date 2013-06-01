@@ -23,7 +23,7 @@ class InvestorsController < ApplicationController
         end
 
         #subscribe to all the starter funds
-        Fund.where(starter_fund: false).each do |f|
+        Fund.where(starter_fund: true).each do |f|
           f.relationships.build(investor_id: @investor.id).save
         end
 

@@ -12,12 +12,15 @@
 		<% @funds.each do |f| %>
 			<tr>
 				<td><%= link_to f.name, f %></td>
-				<td><%= link_to 'Edit', edit_fund_path(f) %></td>
-				<td><%= link_to 'Edit Returns', months_edit_for_fund_path(f) %></td>
-				<td><%= link_to 'Un-Archive', toggle_archive_fund_path(f), :method => :put %></td>
 				<% if f.starter_fund? %>
 					<td>--</td>
+					<td>--</td>
+					<td>--</td>
+					<td><%= link_to 'Delete', f.relationships.find_by_investor_id(current_user.investor.id), method: :delete, data: {confirm: "Are you sure?"} %></td>
 				<% else %>
+					<td><%= link_to 'Edit', edit_fund_path(f) %></td>
+					<td><%= link_to 'Edit Returns', months_edit_for_fund_path(f) %></td>
+					<td><%= link_to 'Un-Archive', toggle_archive_fund_path(f), :method => :put %></td>
 					<td><%= link_to 'Delete', f, method: :delete, data: {confirm: "Are you sure?"} %></td>
 				<% end %>
 			</tr>
