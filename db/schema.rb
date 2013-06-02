@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130531022959) do
+ActiveRecord::Schema.define(:version => 20130601220420) do
 
   create_table "funds", :force => true do |t|
     t.string   "name"
@@ -24,14 +24,14 @@ ActiveRecord::Schema.define(:version => 20130531022959) do
     t.boolean  "starter_fund", :default => false
   end
 
-  add_index "funds", ["name"], :name => "index_funds_on_name", :unique => true
-
   create_table "investors", :force => true do |t|
     t.string   "name"
     t.datetime "created_at",    :null => false
     t.datetime "updated_at",    :null => false
     t.integer  "invitation_id"
   end
+
+  add_index "investors", ["name"], :name => "index_investors_on_name", :unique => true
 
   create_table "invitations", :force => true do |t|
     t.integer  "sender_id"
@@ -51,12 +51,16 @@ ActiveRecord::Schema.define(:version => 20130531022959) do
     t.datetime "updated_at",                                :null => false
   end
 
+  add_index "months", ["mend", "fund_id"], :name => "index_months_on_mend_and_fund_id", :unique => true
+
   create_table "relationships", :force => true do |t|
     t.integer  "fund_id"
     t.integer  "investor_id"
     t.datetime "created_at",  :null => false
     t.datetime "updated_at",  :null => false
   end
+
+  add_index "relationships", ["fund_id", "investor_id"], :name => "index_relationships_on_fund_id_and_investor_id", :unique => true
 
   create_table "trackers", :force => true do |t|
     t.integer  "fund_id"
