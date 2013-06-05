@@ -19,6 +19,7 @@ Box::Application.routes.draw do
   match '/highwater_mark', to: 'funds#highwater_mark'
   match '/retired_funds', to: 'funds#retired_funds'
   match '/login', to: 'sessions#new'
+  match '/new_user_video', to: 'users#new_user_video'
 
   match '/invite_colleagues', to: 'invitations#invite_colleagues'
   match '/investor_signup/:invitation_token', to: 'investors#new', as: 'investor_signup'

@@ -1,8 +1,8 @@
 class UsersController < ApplicationController
 before_filter :authorize_user, except: [:new, :create]
-before_filter :authorize_ga, except: [:new, :create, :edit, :update, :destroy]
+before_filter :authorize_ga, except: [:new, :create, :edit, :update, :destroy, :new_user_video]
 before_filter :correct_user, only: [:edit, :update]
-before_filter :same_investor, except: [:index, :new, :create]
+before_filter :same_investor, except: [:index, :new, :create, :new_user_video]
 
 	def new
 		@user = User.new(:invitation_token => params[:invitation_token])
@@ -57,6 +57,9 @@ before_filter :same_investor, except: [:index, :new, :create]
 		else
 			render 'edit'
 		end
+	end
+
+	def new_user_video
 	end
 
 	def destroy

@@ -15,6 +15,7 @@
 		!(controller.controller_name == 'funds' && controller.action_name == 'show') %>
 		<li>Manage Profile</li>
 		<li style="margin-left:10px"><%= link_to_unless_current 'Edit profile', edit_user_path(current_user) %><li>
+		<li style="margin-left:10px"><%= link_to_unless_current 'New User Video', new_user_video_path %><li>
 		<li>Manage Funds</li>
 		<li style="margin-left:10px"><%= link_to_unless_current 'Funds', funds_path %><li>
 		<li style="margin-left:10px"><%= link_to_unless_current "Create new fund", new_fund_path %></li>
