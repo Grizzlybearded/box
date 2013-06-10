@@ -10,7 +10,6 @@
 	<% end %></br>
 
 	<% if !current_page?(root_path) && 
-		!current_page?(highwater_mark_path) && 
 		!(controller.controller_name == 'funds' && controller.action_name == 'show') %>
 		<li>Manage Profile</li>
 		<li style="margin-left:10px"><%= link_to_unless_current 'Edit profile', edit_user_path(current_user) %><li>
