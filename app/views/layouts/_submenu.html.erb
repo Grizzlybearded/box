@@ -1,7 +1,6 @@
 <% if current_user %>
 <ul>
 	<li><%= link_to_unless_current 'Recent Returns', root_path %></li>
-	<li><%= link_to_unless_current 'Highwater Mark', highwater_mark_path %></li>
 	--------------------
 	<% if current_user.global_admin? %>
 		<li><%= link_to_unless_current 'HF Index', funds_path %></li>
@@ -23,9 +22,10 @@
 		<li style="margin-left:10px"><%= link_to_unless_current 'Archived Funds', retired_funds_path %><li>
 		<li><%= "Manage #{current_user.investor.name}" %></li>
 		<li style="margin-left:10px"><%= link_to_unless_current "#{current_user.investor.name}", current_user.investor %><li>
-		<li style="margin-left:10px"><%= link_to_unless_current "Invite Colleague", invite_colleagues_path %><li>
+		<% if current_user.number_invites > 0 %>
+			<li style="margin-left:10px"><%= link_to_unless_current "Invite Colleague", invite_colleagues_path %><li>
+		<% end %>
 	<% else %>
-		<li>My Funds</li>
 		<% Fund::VALID_FUND_TYPES.each do |i| %>
 			<% if current_user.investor.funds.where(fund_type: i, bmark: false, retired: false).present? %>
 				<li><%= i %><li>

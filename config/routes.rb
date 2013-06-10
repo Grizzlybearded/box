@@ -16,7 +16,7 @@ Box::Application.routes.draw do
   end
 
   match '/signup/:invitation_token', to: 'users#new', as: 'signup'
-  match '/highwater_mark', to: 'funds#highwater_mark'
+
   match '/retired_funds', to: 'funds#retired_funds'
   match '/login', to: 'sessions#new'
   match '/new_user_video', to: 'users#new_user_video'

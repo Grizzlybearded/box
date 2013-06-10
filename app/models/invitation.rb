@@ -22,4 +22,9 @@ class Invitation < ActiveRecord::Base
   	def generate_token
   		self.token = Digest::SHA1.hexdigest([Time.now, rand].join)
   	end
+
+    def sender_has_invitations
+
+    end
+
 end

@@ -166,29 +166,37 @@ before_filter :protect_starter_funds, only: [:edit, :update, :destroy, :months_e
 		end
 	end
 
-	def highwater_mark
-		@funds_array = current_user.investor.funds.where(bmark: false, retired: false).order("name")
-	end
-
 	def recent_returns
-		@funds_array = current_user.investor.funds.where(bmark: false, retired: false)
-		@fund_ids = @funds_array.map {|n| n.id}
-
-		@recent_date = Month.where(fund_id: @fund_ids).maximum(:mend)
-
-		#store the funds that have the max date
-		@funds_with_max = Month.where(mend: @recent_date, fund_id: @fund_ids).map{|n| n.fund}.sort {|a,b| a.name <=> b.name}
-
-		all_funds_count = @funds_array.count
-
-		if @funds_with_max.count / (all_funds_count*1.0) < 0.5
-			@recent_date = @recent_date.months_ago(1)
-			@funds_with_date = Month.where(mend: @recent_date, fund_id: @fund_ids).map{|n| n.fund}.sort {|a,b| a.name <=> b.name}
-		else
-			@funds_with_date = @funds_with_max
+		@funds_array = current_user.investor.funds.where(bmark: false, retired: false).order("name")
+		
+		@parent_array = []
+		@child_array = []
+		@funds_array.each do |f|
+			if f.months.last.present?
+				@parent_array << [f, f.months.last.mend , calc_ann_return(get_returns(f, f.months.last.mend.months_ago(11), f.months.last.mend))]
+			else
+				@parent_array << [f, '--','--']
+			end
 		end
 
-		@removed_funds = @funds_array - @funds_with_date
+
+		#@fund_ids = @funds_array.map {|n| n.id}
+
+		#@recent_date = Month.where(fund_id: @fund_ids).maximum(:mend)
+
+		#store the funds that have the max date
+		#@funds_with_max = Month.where(mend: @recent_date, fund_id: @fund_ids).map{|n| n.fund}.sort {|a,b| a.name <=> b.name}
+
+		#all_funds_count = @funds_array.count
+
+		#if @funds_with_max.count / (all_funds_count*1.0) < 0.5
+		#	@recent_date = @recent_date.months_ago(1)
+		#	@funds_with_date = Month.where(mend: @recent_date, fund_id: @fund_ids).map{|n| n.fund}.sort {|a,b| a.name <=> b.name}
+		#else
+		#	@funds_with_date = @funds_with_max
+		#end
+
+		#@removed_funds = @funds_array - @funds_with_date
 	end
 
 	def retired_funds
