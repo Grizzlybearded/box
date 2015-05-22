@@ -20,11 +20,11 @@ before_filter :protect_starter_funds, only: [:edit, :update, :destroy, :months_e
 		#
 
 		@fund = Fund.new(params[:fund])
-		#if @fund.save
-		#	@fund_benchmarks = Fund.get_initial_benchmarks(@fund)
-		#	@fund.trackers.build(benchmark_id: @fund_benchmarks[0], user_id: nil).save
-		#	@fund.trackers.build(benchmark_id: @fund_benchmarks[1], user_id: nil).save
-		#	current_user.investor.relationships.build(fund_id: @fund.id).save
+		if @fund.save
+			@fund_benchmarks = Fund.get_initial_benchmarks(@fund)
+			@fund.trackers.build(benchmark_id: @fund_benchmarks[0], user_id: nil).save
+			@fund.trackers.build(benchmark_id: @fund_benchmarks[1], user_id: nil).save
+			current_user.investor.relationships.build(fund_id: @fund.id).save
 			
 			
 			#email to the rest of the users if not a fund
@@ -33,11 +33,11 @@ before_filter :protect_starter_funds, only: [:edit, :update, :destroy, :months_e
 				
 			#end
 
-		#	flash[:success] = "New fund created"
-		#	redirect_to new_import_return_path
-		#else
-		#	render 'new'
-		#end
+			flash[:success] = "New fund created"
+			redirect_to new_import_return_path
+		else
+			render 'new'
+		end
 	end
 
 	def index
