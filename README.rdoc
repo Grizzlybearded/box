@@ -25,7 +25,7 @@ Box was my solution to The Analyst and Senior Investors' problems. The Analyst w
 Quote from a manager at my firm: "Your tool has opened my eyes to what technology can do for us."
 
 == Why I did this
-I was The Analyst and I became frustrated with the amount of manual work I was doing. I knew there was a superior software solution that excel could not provide.
+I was The Analyst and I became frustrated with the amount of manual work I was doing. I knew there was a superior software solution than excel for this type of work.
 
 == What I learned
 1. Understanding user problems and building a backlog: this was the first time I evaluated user problems with the intent of constructing a software solution to solve those problems. It was also the first time I generated a list of features to build and made "impact vs effort" assessments to groom the backlog.
